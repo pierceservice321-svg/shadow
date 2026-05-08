@@ -64,7 +64,7 @@
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; border-radius: 2px; outline: none; }
 
-        /* 報告書排版修正 */
+        /* 報告書樣式 */
         #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
         .evidence-folder { position: relative; width: 95%; max-width: 620px; padding: 40px 30px; color: #d22; max-height: 90vh; overflow-y: auto; border: 1px solid #600; line-height: 1.8; background: #0a0000; box-shadow: inset 0 0 50px #000; }
         .report-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #700; padding-bottom: 15px; }
@@ -73,17 +73,35 @@
         .report-label { color: #f00; font-weight: bold; display: block; margin-bottom: 4px; border-left: 3px solid #f00; padding-left: 8px; }
         .report-footer { margin-top: 40px; border-top: 1px solid #400; padding-top: 20px; font-weight: bold; color: #a00; font-size: 0.95rem; }
 
-        /* --- 成功結局：僅保留英文白字，移除中文 --- */
+        /* 成功結局 */
         #success-ending { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 100001; flex-direction: column; justify-content: center; align-items: center; 
             text-align: center; 
         }
         .fear-text-sub { 
-            color: #fff; /* 純白文字 */
-            font-family: 'Special Elite', cursive; font-size: 2.2rem; letter-spacing: 12px;
-            text-shadow: none; 
+            color: #fff; font-family: 'Special Elite', cursive; font-size: 2.2rem; letter-spacing: 12px;
             font-weight: bold;
+        }
+
+        /* NO按鈕觸發的洪水模式 */
+        #no-death-screen { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 100000; overflow-y: hidden; padding: 10px;
+        }
+        #flood-content { 
+            color: #f00; font-family: 'Special Elite', cursive; font-weight: bold; 
+            word-break: break-all; line-height: 1.2;
+        }
+
+        /* --- 關鍵修正：輸入三次錯誤的死亡結局畫面 --- */
+        #death-ending { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 100002; overflow: hidden; padding: 10px;
+        }
+        #death-content { 
+            color: #f00; font-family: monospace; font-weight: bold; 
+            word-break: break-all; line-height: 1.0;
         }
 
         @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
@@ -140,7 +158,7 @@
             </div>
             <div class="report-paragraph">
                 <span class="report-label">語言霸凌觀測：</span>
-                院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙綠眸注視著霸凌者，似是在觀察某種即將腐爛的標本。
+                院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人情感隔離能力，他安靜地坐在角落，用那雙綠眸注視著霸凌者，似是在觀察某種即將腐爛的標本。
             </div>
             <div class="report-paragraph">
                 <span class="report-label">冷藏室事件：</span>
@@ -160,27 +178,29 @@
     <div class="fear-text-sub">YOU DID WELL. NOW, RUN.</div>
 </div>
 
-<div id="no-death-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:100000; overflow-y:auto; padding:20px;">
-    <div id="flood-content" style="color:#f00; font-weight:bold; font-size:1.6rem; word-break:break-all;"></div>
+<div id="no-death-screen">
+    <div id="flood-content"></div>
+</div>
+
+<div id="death-ending">
+    <div id="death-content"></div>
 </div>
 
 <script>
     "use strict";
     let currentMod = 1; 
     let inputStr = ""; 
-    let errorCount = 0; 
+    let errorCount = 0; // 錯誤計數器
     let glitchInterval;
 
-    const gateTitles = { 
-        1: "STAGE 01: 生還者", 
-        2: "STAGE 02: 耐受測試", 
-        3: "STAGE 03: 捏造血緣" 
-    };
-
+    const gateTitles = { 1: "STAGE 01: 生還者", 2: "STAGE 02: 耐受測試", 3: "STAGE 03: 捏造血緣" };
     const answers = { 1: "1", 2: "4", 3: "12" };
     const decryptMsgs = { 1: "ACCESSING...", 2: "EXTRACTING...", 3: "AUTHORIZING..." };
     const decryptTimes = { 1: 1500, 2: 3000, 3: 5000 }; 
     const glitchChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+=-[]{}|;:,.<>?";
+
+    // NO觸發的詞庫
+    const warnings = ["RUN", "HURRY UP", "LOOK BEHIND YOU", "HIDE", "WATCH OUT", "DONT BREATHE", "HE IS COMING", "STAY QUIET", "TOO LATE"];
 
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室的保險箱嗎？";
 
@@ -204,9 +224,7 @@
         clearInterval(glitchInterval);
         glitchInterval = setInterval(() => {
             let glitched = "";
-            for(let i=0; i<150; i++) {
-                glitched += glitchChars[Math.floor(Math.random() * glitchChars.length)];
-            }
+            for(let i=0; i<150; i++) { glitched += glitchChars[Math.floor(Math.random() * glitchChars.length)]; }
             target.innerText = glitched;
         }, 50);
     }
@@ -225,47 +243,41 @@
     function clearD() { inputStr = ""; document.getElementById('display').innerText = (currentMod === 3) ? "--" : "-"; }
     
     function submit() {
-        if (inputStr === answers[currentMod]) {
-            errorCount = 0;
-            runDecryption();
-        } else {
-            errorCount++;
-            if (errorCount >= 3) { location.reload(); } 
-            else { document.getElementById('display').innerText = "ERR"; setTimeout(clearD, 600); }
+        if (inputStr === answers[currentMod]) { 
+            // errorCount = 0; // 成功後不重置錯誤，增加難度（若要重置請取消註解）
+            runDecryption(); 
+        } 
+        else { 
+            errorCount++; 
+            // 關鍵修正：判斷錯誤次數
+            if (errorCount >= 3) { 
+                triggerDeathEnding(); // 觸發死亡結局
+            } else { 
+                document.getElementById('display').innerText = "ERR"; 
+                setTimeout(clearD, 600); 
+            } 
         }
     }
 
     function runDecryption() {
         const overlay = document.getElementById('decrypt-overlay');
         const fill = document.getElementById('p-fill');
-        const msg = document.getElementById('decrypt-msg');
         const duration = decryptTimes[currentMod];
-
         overlay.style.display = 'flex';
-        msg.innerText = decryptMsgs[currentMod];
+        document.getElementById('decrypt-msg').innerText = decryptMsgs[currentMod];
         
         let startTime = performance.now();
-        
         function update(currentTime) {
             let elapsed = currentTime - startTime;
             let progress = Math.min(elapsed / duration, 1);
             fill.style.width = (progress * 100) + "%";
-            document.getElementById('decrypt-hex').innerText = "HEX_DUMP_0x" + Math.random().toString(16).substring(2, 10).toUpperCase();
-
-            if (progress < 1) {
-                requestAnimationFrame(update);
-            } else {
+            document.getElementById('decrypt-hex').innerText = "0x" + Math.random().toString(16).substring(2, 10).toUpperCase();
+            if (progress < 1) { requestAnimationFrame(update); } 
+            else {
                 setTimeout(() => {
                     overlay.style.display = 'none';
-                    fill.style.width = "0%";
-                    if (currentMod < 3) { 
-                        currentMod++; 
-                        document.getElementById('current-gate-title').innerText = gateTitles[currentMod];
-                        clearD(); 
-                    } else { 
-                        document.getElementById('main-terminal').style.display = 'none'; 
-                        document.getElementById('secret-overlay').style.display = 'flex'; 
-                    }
+                    if (currentMod < 3) { currentMod++; document.getElementById('current-gate-title').innerText = gateTitles[currentMod]; clearD(); } 
+                    else { document.getElementById('main-terminal').style.display = 'none'; document.getElementById('secret-overlay').style.display = 'flex'; }
                 }, 400);
             }
         }
@@ -280,11 +292,40 @@
     function triggerFloodTypewriter() { 
         document.getElementById('intro-screen').style.display = 'none'; 
         const screen = document.getElementById('no-death-screen');
+        const content = document.getElementById('flood-content');
         screen.style.display = "block"; 
+        
         setInterval(() => { 
-            document.getElementById('flood-content').innerHTML += "RUN "; 
-            screen.scrollTop = screen.scrollHeight;
-        }, 10); 
+            const word = warnings[Math.floor(Math.random() * warnings.length)];
+            const fontSize = Math.floor(Math.random() * (40 - 14) + 14) + "px";
+            const opacity = Math.random() * (1 - 0.5) + 0.5;
+            content.innerHTML += `<span style="font-size:${fontSize}; opacity:${opacity}; margin-right:10px;">${word}</span> `; 
+            window.scrollTo(0, document.body.scrollHeight);
+        }, 30); 
+    }
+
+    // --- 關鍵修正：觸發死亡結局的函數 ---
+    function triggerDeathEnding() {
+        // 隱藏所有主要介面
+        document.getElementById('intro-screen').style.display = 'none';
+        document.getElementById('main-terminal').style.display = 'none';
+        document.getElementById('secret-overlay').style.display = 'none';
+        
+        const screen = document.getElementById('death-ending');
+        const content = document.getElementById('death-content');
+        screen.style.display = "block"; // 顯示死亡畫面
+        
+        // 啟動瘋狂的 "DEAD" 洪水動畫
+        setInterval(() => { 
+            const word = "DEAD";
+            // 隨機字體大小、透明度和暗紅/鮮紅顏色
+            const fontSize = Math.floor(Math.random() * (48 - 16) + 16) + "px";
+            const opacity = Math.random() * (1 - 0.4) + 0.4;
+            const color = Math.random() > 0.5 ? "#f00" : "#800";
+            content.innerHTML += `<span style="font-size:${fontSize}; opacity:${opacity}; color:${color}; margin-right:8px;">${word}</span> `; 
+            // 雖然設定不滾動，但這能確保內容填滿畫面
+            window.scrollTo(0, document.body.scrollHeight);
+        }, 20); // 極高的刷新頻率
     }
 </script>
 </body>
