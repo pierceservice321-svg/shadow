@@ -16,12 +16,14 @@
             min-height: 100vh; overflow: hidden; 
         }
 
+        /* CRT 掃描線濾鏡 */
         body::before {
             content: " "; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
+        /* 1. 前傳區塊 */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; 
             flex-direction: column; justify-content: center; align-items: center; 
@@ -42,8 +44,9 @@
             transition: 0.3s; letter-spacing: 6px; font-weight: bold;
         }
         .btn:hover { background: #f00; color: #000; box-shadow: 0 0 20px #f00; }
-        .btn-run { border-color: #600; color: #800; }
+        .btn-no { border-color: #444; color: #666; }
 
+        /* 2. 終端機密碼輸入 */
         .terminal-container { 
             width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; 
             border: 1px solid #800; background: rgba(10, 0, 0, 0.95);
@@ -57,6 +60,7 @@
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
 
+        /* 3. 洪水結局 (點擊 NO) */
         #death-screen {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 100000; overflow-y: auto; padding: 20px;
@@ -66,9 +70,22 @@
         .shake-active { animation: screen-shake 0.3s infinite; }
         @keyframes screen-shake { 0% { transform: translate(0,0); } 20% { transform: translate(5px, 5px); } 40% { transform: translate(-5px, -5px); } 100% { transform: translate(0,0); } }
 
-        #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
-        .evidence-folder { width: 95%; max-width: 520px; padding: 45px; color: #d22; max-height: 85vh; overflow-y: auto; border: 1px solid #400; line-height: 1.9; }
-        
+        /* 4. 特殊個案報告書 (YES 結局) */
+        #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
+        .evidence-folder { 
+            position: relative; width: 95%; max-width: 600px; padding: 40px; color: #d22; 
+            max-height: 90vh; overflow-y: auto; border: 1px solid #600; line-height: 1.8; background: #0a0000;
+            box-shadow: inset 0 0 50px #000;
+        }
+        .stamp {
+            position: absolute; top: 35px; right: 25px; border: 4px solid #f00; color: #f00;
+            font-family: 'Special Elite', cursive; font-size: 1.4rem; padding: 5px 15px;
+            transform: rotate(12deg); opacity: 0.9; font-weight: bold; text-shadow: 0 0 5px #f00;
+        }
+        .report-section { margin-bottom: 22px; padding-left: 12px; border-left: 2px solid #500; }
+        .report-label { color: #777; font-size: 0.85rem; display: block; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; }
+
+        /* 成功清理畫面 */
         #success-ending { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 100001; flex-direction: column; justify-content: center; align-items: center; text-align: center;
@@ -83,7 +100,7 @@
     <div id="intro-text"></div>
     <div id="intro-btn-container">
         <button class="btn" onclick="startGame()">YES</button>
-        <button class="btn btn-run" onclick="triggerFloodTypewriter()">RUN</button>
+        <button class="btn btn-no" onclick="triggerFloodTypewriter()">NO</button>
     </div>
 </div>
 
@@ -104,12 +121,37 @@
 </div>
 
 <div id="secret-overlay">
-    <div class="evidence-folder" id="folder-box">
-        <h2 style="font-size:1.15rem; color:#f00; border-bottom:1px solid #600; padding-bottom:15px; margin-bottom:20px;">【聖瑪利亞孤兒院 - 特殊個案追蹤報告】</h2>
-        <p><strong>受測者：</strong>Luca Veil</p>
-        <p><strong>衝突紀錄：</strong><br>受測者護住刻有「V」字樣的金屬扣。即便接受了新的罪名，他的意志仍未被摧毀。</p>
-        <p><strong>結論：</strong><br>檔案已封存。任何未經授權的存取都將觸發物理清除程序。</p>
-        <button id="purge-btn" onclick="triggerSuccessEnd()" style="opacity:1; width:100%; background:none; color:#f00; border:1px solid #f00; padding:18px; margin-top:40px; cursor:pointer; letter-spacing:3px;">抹除存取紀錄 (PURGE)</button>
+    <div class="evidence-folder">
+        <div class="stamp">TOP SECRET</div>
+        <h2 style="font-size:1.2rem; text-align:center; margin-bottom:30px; letter-spacing:3px; color:#f00; border-bottom: 1px double #600; padding-bottom: 10px;">【聖瑪利亞孤兒院 - 特殊個案追蹤報告】</h2>
+        
+        <div class="report-section">
+            <span class="report-label">受測者身分</span>
+            <strong>Luca Veil</strong><br>
+            來自Veil家族的獨生子。（原生家族已於2004年火災中全員喪生）
+        </div>
+
+        <div class="report-section">
+            <span class="report-label">衝突紀錄 (01月12日)</span>
+            受測者遭院內五名兒童圍堵。對方試圖奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。
+        </div>
+
+        <div class="report-section">
+            <span class="report-label">語言霸凌觀測</span>
+            院內兒童頻繁以「異類」、「沒人要的雜種」排擠。受測者展現超乎常人之情感隔離能力，安靜地坐在角落，用<strong>上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本</strong>。
+        </div>
+
+        <div class="report-section">
+            <span class="report-label">冷藏室極限測試 (04月)</span>
+            於深夜被關入食品冷藏室。四小時後解鎖，受測者全身凍得發紫，卻仍緊握那枚金屬扣。面對光線時，其<strong>從未試圖求救</strong>。
+        </div>
+
+        <div class="report-section">
+            <span class="report-label">分析結論</span>
+            一切測試皆在預設指導下執行。確認受測者具備極高韌性與冷靜度，為「捏造血緣」計畫之合格實驗品。目前已強加新罪名並移交目標家族。
+        </div>
+
+        <button id="purge-btn" onclick="triggerSuccessEnd()" style="width:100%; background:none; color:#f00; border:1px solid #f00; padding:18px; margin-top:20px; cursor:pointer; letter-spacing:3px; font-weight:bold;">抹除存取紀錄 (PURGE)</button>
     </div>
 </div>
 
@@ -125,7 +167,6 @@
     const answers = { 1: "1", 2: "4", 3: "12" };
     const gateTitles = { 1: "[ 驗證程序一：身份殘留 ]", 2: "[ 驗證程序二：耐受測試 ]", 3: "[ 驗證程序三：捏造血緣 ]" };
 
-    // --- 關鍵修正：被迫接受了新的罪名，加入了不屬於他的家族 ---
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料都顯示無人生還，但那活下來的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
 
     function typeWriter(text, i, targetId, callback) {
