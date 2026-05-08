@@ -49,26 +49,36 @@
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; outline: none; }
 
-        /* 結局 */
+        /* 成功結局 */
         #success-ending { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10001; flex-direction: column; justify-content: center; align-items: center; }
         .fear-text-sub { color: #fff; font-family: 'Special Elite', cursive; font-size: 2.2rem; letter-spacing: 12px; font-weight: bold; }
 
-        /* --- 死亡崩潰畫面 (DEAD) --- */
+        /* --- NO 按鈕洪水打字機介面 (復原) --- */
+        #no-death-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100000; overflow: hidden; padding: 10px; }
+        #flood-content { color: #f00; font-family: 'Special Elite', cursive; word-break: break-all; font-weight: bold; line-height: 1.2; }
+
+        /* --- 死亡結局介面 (復原與強化恐怖效果) --- */
         #death-ending { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 200000; overflow: hidden; padding: 0;
+            filter: contrast(1.3); /* 增加對比度 */
         }
         #death-content { 
-            color: #f00; font-family: 'Cormorant Unicase', serif; font-weight: 700; 
+            font-family: 'Cormorant Unicase', serif; font-weight: 700; 
             word-break: break-all; line-height: 0.8; position: absolute; width: 110%; height: 110%; top: -5%; left: -5%;
         }
 
+        /* 死亡文字的隨機變色和泛白動畫 (復原) */
         @keyframes deathGlitch {
-            0% { color: #f00; text-shadow: 0 0 0px #fff; opacity: 1; }
-            5% { color: #fff; text-shadow: 0 0 10px #fff; opacity: 0.8; } 
-            10% { color: #800; text-shadow: 0 0 0px #fff; opacity: 1; }
-            25% { color: #ffcccc; text-shadow: 0 0 15px #fff; } 
-            35% { color: #fff; text-shadow: 0 0 20px #fff; }
+            0% { color: #f00; text-shadow: 0 0 0px #fff; opacity: 1; filter: blur(0px); }
+            5% { color: #fff; text-shadow: 0 0 10px #fff; opacity: 0.8; filter: blur(1.5px); } /* 瞬間泛白模糊 */
+            10% { color: #800; text-shadow: 0 0 0px #fff; opacity: 1; filter: blur(0px); }
+            20% { color: #fff; text-shadow: 0 0 5px #fff; opacity: 0.9; }
+            30% { color: #f00; text-shadow: 0 0 0px #fff; }
+            45% { color: #ffcccc; text-shadow: 0 0 15px #fff; filter: blur(0.5px); } /* 泛白 */
+            60% { color: #300; text-shadow: 0 0 0px #fff; } /* 暗紅 */
+            75% { color: #fff; text-shadow: 0 0 20px #fff; opacity: 1; } /* 強烈泛白 */
+            90% { color: #f00; text-shadow: 0 0 0px #fff; }
             100% { color: #f00; text-shadow: 0 0 0px #fff; }
         }
 
@@ -106,6 +116,8 @@
     <div class="fear-text-sub">YOU DID WELL. NOW, RUN.</div>
 </div>
 
+<div id="no-death-screen"><div id="flood-content"></div></div>
+
 <div id="death-ending"><div id="death-content"></div></div>
 
 <script>
@@ -114,12 +126,17 @@
     let inputStr = ""; 
     let errorCount = 0; 
     const answers = { 1: "1", 2: "4", 3: "12" };
-    const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n\n你確定要嘗試打開地下室的保險箱嗎？";
+    
+    // 前傳文字
+    const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室的保險箱嗎？";
+
+    // NO觸發的詞庫 (復原)
+    const warnings = ["RUN", "HURRY UP", "LOOK BEHIND YOU", "HIDE", "WATCH OUT", "DONT BREATHE", "HE IS COMING", "STAY QUIET", "TOO LATE"];
 
     function typeWriter(text, i, targetId, callback) {
         if (i < text.length) {
             document.getElementById(targetId).innerHTML += (text[i] === '\n' ? '<br>' : text[i]);
-            setTimeout(() => typeWriter(text, i + 1, targetId, callback), 50);
+            setTimeout(() => typeWriter(text, i + 1, targetId, callback), (text[i] === '？' || text[i] === '。' || text[i] === '\n' ? 550 : 50));
         } else if (callback) callback();
     }
 
@@ -163,24 +180,53 @@
         requestAnimationFrame(update);
     }
 
+    // --- 關鍵復原：NO 按鈕打字機洪水效果 ---
+    function triggerFloodTypewriter() { 
+        document.getElementById('intro-screen').style.display = 'none'; 
+        document.getElementById('no-death-screen').style.display = "block"; 
+        const content = document.getElementById('flood-content');
+        
+        setInterval(() => { 
+            // 隨機選取詞彙
+            const word = warnings[Math.floor(Math.random() * warnings.length)];
+            // 隨機大小、透明度
+            const fontSize = Math.floor(Math.random() * (40 - 14) + 14) + "px";
+            const opacity = Math.random() * (1 - 0.5) + 0.5;
+            
+            // 插入文字塊並自動捲動
+            content.innerHTML += `<span style="font-size:${fontSize}; opacity:${opacity}; margin-right:10px;">${word}</span> `; 
+            window.scrollTo(0, document.body.scrollHeight);
+        }, 30); // 復原為快速產生頻率
+    }
+
+    // --- 關鍵復原：泛白變色恐怖片死亡效果 ---
     function triggerDeathEnding() {
         document.getElementById('main-terminal').style.display = 'none';
         document.getElementById('death-ending').style.display = "block";
         const content = document.getElementById('death-content');
-        const deathWords = ["DEAD", "VOID", "ERROR", "✕✕✕", "FATAL"];
-
+        
         // 啟動死亡洪水動畫
         const deathInterval = setInterval(() => { 
-            const fontSize = Math.floor(Math.random() * 60 + 10) + "px";
-            const scaleX = Math.random() * 2 + 0.5;
-            const word = deathWords[Math.floor(Math.random() * deathWords.length)];
-            const animDuration = Math.random() * 0.5 + 0.1 + "s";
+            const fontSize = Math.floor(Math.random() * (60 - 12) + 12) + "px";
+            const scaleX = Math.random() * 2 + 0.5; // 水平變形復原
+            const word = "DEAD";
             
-            content.innerHTML += `<span style="display:inline-block; font-size:${fontSize}; transform:scaleX(${scaleX}); animation:deathGlitch ${animDuration} infinite alternate; margin-right:5px;">${word}</span> `; 
+            // 動畫持續時間隨機化
+            const animDuration = Math.random() * 0.6 + 0.1 + "s";
+            
+            // 復原動態變色泛白樣式
+            content.innerHTML += `<span style="
+                display:inline-block; 
+                font-size:${fontSize}; 
+                transform:scaleX(${scaleX}); 
+                animation:deathGlitch ${animDuration} infinite alternate; 
+                margin-right:5px;
+            ">${word}</span> `; 
+            
             window.scrollTo(0, document.body.scrollHeight);
-        }, 15);
+        }, 15); // 極高產生頻率復原
 
-        // --- 關鍵新增：10秒後重整頁面回到前傳 ---
+        // 10秒後重整頁面回到前傳
         setTimeout(() => {
             clearInterval(deathInterval);
             location.reload(); 
