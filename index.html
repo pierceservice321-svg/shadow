@@ -16,15 +16,14 @@
             min-height: 100vh; overflow: hidden; 
         }
 
-        /* 舊型螢幕掃描線 */
+        /* 螢幕濾鏡 */
         body::before {
-            content: " ";
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            content: " "; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        /* 前傳打字機容器 */
+        /* 前傳畫面 */
         #intro-screen {
             position: fixed; width: 100%; height: 100%; display: flex; 
             flex-direction: column; justify-content: center; align-items: center; 
@@ -36,7 +35,12 @@
             border-left: 2px solid #500; padding-left: 25px;
         }
 
-        /* 終端機密碼鎖 */
+        .choice-container { display: flex; gap: 20px; margin-top: 30px; opacity: 0; transition: 1.5s; }
+        .btn { background: none; border: 1px solid #f00; color: #f00; padding: 12px 40px; font-size: 1.1rem; cursor: pointer; transition: 0.3s; letter-spacing: 4px; }
+        .btn:hover { background: #f00; color: #000; box-shadow: 0 0 15px #f00; }
+        .btn-no { border-color: #444; color: #444; }
+
+        /* 終端機介面 */
         .terminal-container { 
             width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; 
             border: 1px solid #800; background: rgba(10, 0, 0, 0.95);
@@ -51,7 +55,7 @@
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
         .key:active { transform: scale(0.92); background: #900; }
 
-        /* 秘密報告書排版 */
+        /* 秘密報告書 */
         #secret-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; padding: 15px; 
@@ -62,40 +66,69 @@
             background: #0a0000; border: 1px solid #400; line-height: 1.9; position: relative;
         }
 
-        /* 蓋章動畫細節 */
+        /* 蓋章動畫 */
         .bottom-stamp { 
             border: 5px double #f00; color: #f00; padding: 10px 30px; font-weight: bold; 
             display: inline-block; transform: rotate(-15deg) scale(10); opacity: 0;
             font-size: 1.6rem; margin-top: 40px; font-family: sans-serif;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.1s;
         }
-        .stamp-active { transform: rotate(-15deg) scale(1); opacity: 0.7; }
+        .stamp-active { transform: rotate(-15deg) scale(0.8); opacity: 0.8; }
 
+        /* 全局震動 */
         @keyframes screen-shake {
             0% { transform: translate(0,0); }
-            20% { transform: translate(5px, 5px); }
-            40% { transform: translate(-5px, -5px); }
+            20% { transform: translate(6px, 6px); }
+            40% { transform: translate(-6px, -6px); }
             100% { transform: translate(0,0); }
         }
         .shake-active { animation: screen-shake 0.3s ease-in-out; }
 
-        .btn { background: none; border: 1px solid #f00; color: #f00; padding: 12px 40px; font-size: 1.1rem; cursor: pointer; transition: 0.3s; letter-spacing: 4px; margin-top: 30px; }
-        .btn:hover { background: #f00; color: #000; }
+        /* YES 結局：你做得很好... */
+        #success-ending {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 100001; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .success-text {
+            color: #f00; font-size: 1.5rem; letter-spacing: 5px; text-align: center;
+            animation: pulse-glow 2s infinite alternate;
+        }
+        @keyframes pulse-glow { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 15px #f00; } }
+
+        /* NO 隱藏結局：快跑佔滿螢幕 */
+        #death-screen {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 100000; overflow: hidden; /* 防止滾動 */
+            flex-wrap: wrap; /* 讓文字換行填滿 */
+            align-content: flex-start; /* 從頭開始排 */
+            padding: 5px;
+        }
+        .run-text-flood { 
+            font-size: 2rem; color: #f00; font-weight: bold; font-family: monospace;
+            letter-spacing: -2px; line-height: 1; 
+            margin: 1px;
+            animation: glitch-flood 0.15s infinite alternate;
+            opacity: 0.8;
+        }
+        @keyframes glitch-flood { 
+            0% { transform: skew(2deg); text-shadow: 2px 0 white; opacity: 1; } 
+            100% { transform: skew(-2deg); text-shadow: -2px 0 #fff; opacity: 0.6; } 
+        }
     </style>
 </head>
 <body>
 
 <div id="intro-screen">
     <div id="intro-text"></div>
-    <div id="intro-btn-container" style="opacity:0; transition: 1.5s;">
-        <button class="btn" onclick="startGame()">存取協議</button>
+    <div class="choice-container" id="intro-btn-container">
+        <button class="btn" onclick="startGame()">YES</button>
+        <button class="btn btn-no" onclick="triggerFloodRun()">NO</button>
     </div>
 </div>
 
 <div class="terminal-container" id="main-terminal">
     <div style="text-align:center; margin-bottom:25px;">
-        <p id="current-gate" style="color:#f00; font-weight:bold;">[ 驗證程序一：身份殘留 ]</p>
-        <p style="color:#500; font-size:0.7rem;">STATUS: ENCRYPTED_SECTOR</p>
+        <p id="current-gate" style="color:#f00; font-weight:bold; letter-spacing:2px;">[ 驗證程序一：身份殘留 ]</p>
     </div>
     <div id="display">-</div>
     <div class="keypad">
@@ -106,7 +139,6 @@
         <button class="key" onclick="press('0')">0</button>
         <button class="key" style="color:#f00;" onclick="submit()">EXE</button>
     </div>
-    <div id="status-msg" style="margin-top:25px; color:#500; text-align:center; font-family:monospace; font-size:0.8rem;">AWAITING_KEY_</div>
 </div>
 
 <div id="secret-overlay">
@@ -114,28 +146,32 @@
         <h2 style="font-size:1.15rem; color:#f00; border-bottom:1px solid #600; padding-bottom:15px; margin-bottom:20px;">【聖瑪利亞孤兒院St. Maria's Orphanage - 特殊個案追蹤報告】</h2>
         <p><strong>受測者：</strong>Luca Veil<br>來自Veil家族的獨生子。（原生家族已於 2004 年火災中全員喪生）</p>
         <p><strong>衝突紀錄：</strong><br>1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。</p>
-        <p><strong>語言霸凌觀測：</strong><br>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸黎者，彷彿在觀察某種即將腐爛的標本。</p>
+        <p><strong>語言霸凌觀測：</strong><br>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
         <p><strong>冷藏室事件：</strong><br>為了測試其耐受極限，他在 4 月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
         <p style="color:#933; font-style:italic; border-left:3px solid #500; padding-left:15px; margin-top:25px;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
-        
         <div style="text-align:right; min-height:100px;">
             <div id="stamp" class="bottom-stamp">TOP SECRET</div>
         </div>
-        <button id="purge-btn" onclick="location.reload()" style="opacity:0; width:100%; background:none; color:#f00; border:1px solid #f00; padding:18px; margin-top:20px; cursor:pointer; letter-spacing:3px; transition: 1s;">抹除存取紀錄</button>
+        <button id="purge-btn" onclick="triggerSuccessEnd()" style="opacity:0; width:100%; background:none; color:#f00; border:1px solid #f00; padding:18px; margin-top:20px; cursor:pointer; letter-spacing:3px; transition: 1s;">抹除存取紀錄</button>
     </div>
 </div>
+
+<div id="success-ending">
+    <div class="success-text">你做得很好，現在快跑吧。</div>
+    <div style="color:#300; font-size:0.7rem; margin-top:30px;">CONNECTION TERMINATED_</div>
+</div>
+
+<div id="death-screen"></div>
 
 <script>
     let currentMod = 1; let inputStr = ""; 
     const answers = { 1: "1", 2: "4", 3: "12" };
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料都顯示無人生還，\n但那活下來的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的姓氏。加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
 
-    // 打字機效果：支援換行 \n
     function typeWriter(text, i, targetId) {
         if (i < text.length) {
             let char = text.charAt(i);
-            let displayChar = char === '\n' ? '<br>' : char;
-            document.getElementById(targetId).innerHTML += displayChar;
+            document.getElementById(targetId).innerHTML += (char === '\n' ? '<br>' : char);
             let delay = (char === '，' || char === '。' || char === '\n') ? 450 : 60;
             setTimeout(() => typeWriter(text, i + 1, targetId), delay);
         } else {
@@ -148,6 +184,40 @@
     function startGame() {
         document.getElementById('intro-screen').style.display = 'none';
         document.getElementById('main-terminal').style.display = 'flex';
+    }
+
+    // 觸發「快跑」洪水
+    function triggerFloodRun() {
+        document.getElementById('intro-text').innerHTML = "<span style='color:red;'>黑暗中，有一雙眼睛正盯著你的後腦勺...</span>";
+        document.getElementById('intro-btn-container').style.display = "none";
+        
+        setTimeout(() => {
+            const deathScreen = document.getElementById('death-screen');
+            deathScreen.style.display = "flex";
+            
+            // 計算需要多少文字才能填滿螢幕
+            const screenArea = window.innerWidth * window.innerHeight;
+            // 估算一個文字（快跑）的面積，包含 margin
+            const textArea = 32 * 32 * 1.5; 
+            const neededWords = Math.floor(screenArea / textArea) * 2; // 乘2確保絕對充滿
+            
+            // 生成文字洪水
+            let words = "";
+            for (let i = 0; i < neededWords; i++) {
+                words += `<span class="run-text-flood">快跑</span>`;
+            }
+            deathScreen.innerHTML = words;
+            
+            // 強制震動 body 增加恐慌
+            document.body.classList.add('shake-active');
+            
+            // 2秒後畫面全黑，模擬系統崩潰
+            setTimeout(() => {
+                document.body.innerHTML = ""; 
+                setTimeout(() => location.reload(), 2000);
+            }, 2500);
+            
+        }, 1500);
     }
 
     function submit() {
@@ -176,6 +246,12 @@
                 setTimeout(() => { document.getElementById('purge-btn').style.opacity = "1"; }, 800);
             }, 400);
         }, 1200);
+    }
+
+    function triggerSuccessEnd() {
+        document.getElementById('secret-overlay').style.display = 'none';
+        document.getElementById('success-ending').style.display = 'flex';
+        setTimeout(() => { location.reload(); }, 4000);
     }
 
     function press(n) {
