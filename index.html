@@ -9,160 +9,167 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         
-        body { background: #000; color: #900; font-family: 'Noto Serif TC', serif; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; }
-
-        /* 全域掃描線 (CRT) */
-        .crt::before {
-            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            z-index: 1000; background-size: 100% 3px, 3px 100%; pointer-events: none;
+        body { 
+            background: #000; color: #900; font-family: 'Noto Serif TC', serif; 
+            overflow: hidden; height: 100vh; width: 100vw;
         }
 
-        .container { width: 100%; max-width: 1280px; height: 100vh; position: relative; display: flex; justify-content: center; align-items: center; }
+        /* CRT 掃描線 */
+        .crt::before {
+            content: " "; display: block; position: fixed; inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 9999; background-size: 100% 3px, 3px 100%; pointer-events: none;
+        }
 
-        /* 畫面層級 */
-        .screen { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; z-index: 10; }
+        /* 畫面定位核心 */
+        .screen {
+            position: fixed; inset: 0; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px; text-align: center;
+        }
         .screen.active { display: flex; }
 
-        /* 文字樣式 */
-        .typewriter { max-width: 800px; color: #c33; font-size: 1.1rem; line-height: 1.8; border-left: 3px solid #600; padding-left: 20px; text-align: left; }
+        /* 打字機內容 */
+        .typewriter { 
+            max-width: 600px; color: #c33; font-size: 1.1rem; line-height: 1.8; 
+            border-left: 3px solid #600; padding-left: 20px; text-align: left;
+            margin-bottom: 20px;
+        }
 
-        /* 按鈕結構 */
-        .btn-group { display: flex; gap: 30px; margin-top: 40px; opacity: 0; transition: opacity 1s easing-in; }
+        .btn-group { display: flex; gap: 20px; opacity: 0; transition: opacity 1s; }
         .btn {
-            background: none; border: 2px solid #f00; color: #f00; padding: 12px 40px;
-            font-size: 1.2rem; cursor: pointer; font-family: 'Special Elite'; font-weight: bold;
-            letter-spacing: 3px; z-index: 50; position: relative; transition: 0.2s;
+            background: none; border: 2px solid #f00; color: #f00; padding: 10px 30px;
+            font-size: 1.1rem; cursor: pointer; font-family: 'Special Elite'; font-weight: bold;
+            letter-spacing: 2px;
         }
-        .btn:hover { background: #f00; color: #000; box-shadow: 0 0 15px #f00; }
+        .btn:active { background: #f00; color: #000; }
 
-        /* 終端機 UI */
-        .t-box { width: 95%; max-width: 400px; padding: 25px; background: rgba(10, 0, 0, 0.95); border: 1px solid #800; text-align: center; }
-        .t-title { font-family: 'Special Elite'; color: #f00; font-size: 1.3rem; margin-bottom: 5px; }
-        .noise { font-family: 'Courier New', monospace; font-size: 0.8rem; color: #500; height: 1.2rem; margin-bottom: 15px; letter-spacing: 2px; }
+        /* 終端機 UI 修正 */
+        .t-box { 
+            width: 90%; max-width: 380px; padding: 20px; 
+            background: rgba(15, 0, 0, 0.95); border: 1px solid #800; 
+        }
+        .t-title { font-family: 'Special Elite'; color: #f00; font-size: 1.2rem; margin-bottom: 5px; }
+        .noise-layer { 
+            font-family: monospace; font-size: 0.8rem; color: #500; 
+            height: 1.2rem; margin-bottom: 10px; letter-spacing: 2px;
+        }
         .t-display {
-            background: rgba(30, 0, 0, 0.9); border: 1px solid #700; color: #f00; height: 70px;
-            line-height: 70px; font-size: 2.5rem; margin-bottom: 20px; font-family: 'Special Elite'; letter-spacing: 5px;
+            background: rgba(30, 0, 0, 0.9); border: 1px solid #700; color: #f00; 
+            height: 60px; line-height: 60px; font-size: 2.2rem; 
+            margin-bottom: 15px; font-family: 'Special Elite'; letter-spacing: 5px;
         }
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .key { background: rgba(50, 0, 0, 0.5); border: 1px solid #800; color: #b66; padding: 15px 0; font-size: 1.3rem; font-family: 'Special Elite'; cursor: pointer; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .key { 
+            background: rgba(50, 0, 0, 0.5); border: 1px solid #800; color: #b66; 
+            padding: 12px 0; font-size: 1.2rem; font-family: 'Special Elite';
+        }
 
-        /* 過場 */
-        .loading-bar { width: 200px; height: 3px; background: #300; margin-top: 20px; position: relative; }
-        .loading-fill { position: absolute; left: 0; top: 0; height: 100%; background: #f00; width: 0%; }
+        /* 報告書 */
+        .report-box { 
+            width: 95%; max-width: 600px; max-height: 80vh; 
+            background: rgba(5, 0, 0, 0.98); border: 1px solid #800; 
+            color: #d33; padding: 20px; overflow-y: auto; text-align: left; 
+        }
+        .tag { color: #f00; font-weight: bold; border-left: 3px solid #f00; padding-left: 10px; margin-top: 15px; display: block; }
 
-        /* 報告檔案 */
-        .report-box { width: 95%; max-width: 650px; height: 80vh; background: rgba(5, 0, 0, 0.98); border: 1px solid #800; color: #d33; padding: 25px; overflow-y: auto; text-align: left; line-height: 2; }
-        .tag { color: #f00; font-weight: bold; border-left: 3px solid #f00; padding-left: 10px; margin-top: 20px; display: block; }
-
-        /* 系統崩潰 (黑色數據洪水) */
-        #crash-screen { position: fixed; inset: 0; z-index: 99999; display: none; background: #000; overflow: hidden; }
-        .glitch-txt { position: absolute; font-family: 'Cormorant Unicase'; font-weight: bold; color: rgba(255, 255, 255, 0.3); pointer-events: none; opacity: 0.8; }
-        .rebooting { position: absolute; bottom: 30px; right: 30px; font-family: 'Special Elite'; color: #f00; font-size: 1.5rem; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-
-        /* 成功通關結局 (YOU DID WELL.) */
+        /* 結局畫面 */
         #end-screen { 
-            position: fixed; inset: 0; z-index: 100000; display: none; background: #000; 
-            flex-direction: column; justify-content: center; align-items: center; padding: 40px; 
+            position: fixed; inset: 0; z-index: 10000; display: none; 
+            background: #000; flex-direction: column; justify-content: center; align-items: center; 
         }
-        .end-text {
-            font-family: 'Special Elite'; color: #fff; font-size: 8vw; text-align: center;
-            line-height: 1.2; white-space: nowrap; text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            opacity: 0; /* JS 控制出現 */
+        .final-msg { 
+            font-family: 'Special Elite'; color: #fff; font-size: 10vw; 
+            opacity: 0; transition: opacity 1.5s; margin: 10px 0;
         }
 
-        /* 泛白閃爍 */
-        @keyframes whiteFlash { 0% { background: #000; } 50% { background: #fff; } 100% { background: #fff; } }
-        .ending-active { animation: whiteFlash 0.5s forwards ease-in; }
+        /* 泛白重置 */
+        .white-out { animation: whiteOut 1s forwards; }
+        @keyframes whiteOut { from { background: #000; } to { background: #fff; } }
+
+        /* 崩潰亂碼 */
+        .crash-txt { position: absolute; font-family: serif; color: rgba(255,255,255,0.2); pointer-events: none; }
     </style>
 </head>
 <body class="crt">
 
-    <div class="container">
-        
-        <div class="screen active" id="S1">
-            <div class="typewriter" id="T1"></div>
-            <div class="btn-group" id="B1">
-                <button class="btn" onclick="go('S2')">YES</button>
-                <button class="btn" style="border-color:#444; color:#555;" onclick="crash()">NO</button>
+    <div class="screen active" id="S1">
+        <div class="typewriter" id="T1"></div>
+        <div class="btn-group" id="B1">
+            <button class="btn" onclick="go('S2')">YES</button>
+            <button class="btn" style="border-color:#333; color:#555;" onclick="triggerCrash()">NO</button>
+        </div>
+    </div>
+
+    <div class="screen" id="S2">
+        <div class="t-box">
+            <div class="t-title" id="ST-TITLE">STAGE 01: 生還者</div>
+            <div class="noise-layer" id="NOISE">---</div>
+            <div class="t-display" id="DISP">-</div>
+            <div class="keypad">
+                <button class="key" onclick="k('1')">1</button><button class="key" onclick="k('2')">2</button><button class="key" onclick="k('3')">3</button>
+                <button class="key" onclick="k('4')">4</button><button class="key" onclick="k('5')">5</button><button class="key" onclick="k('6')">6</button>
+                <button class="key" onclick="k('7')">7</button><button class="key" onclick="k('8')">8</button><button class="key" onclick="k('9')">9</button>
+                <button class="key" style="color:#f00;" onclick="c()">CLR</button>
+                <button class="key" onclick="k('0')">0</button>
+                <button class="key" style="color:#f00;" onclick="e()">EXE</button>
             </div>
         </div>
+    </div>
 
-        <div class="screen" id="S2">
-            <div class="t-box">
-                <div class="t-title" id="ST-TITLE">STAGE 01: 生還者</div>
-                <div class="noise" id="NOISE">---</div>
-                <div class="t-display" id="DISP">-</div>
-                <div class="keypad">
-                    <button class="key" onclick="k('1')">1</button><button class="key" onclick="k('2')">2</button><button class="key" onclick="k('3')">3</button>
-                    <button class="key" onclick="k('4')">4</button><button class="key" onclick="k('5')">5</button><button class="key" onclick="k('6')">6</button>
-                    <button class="key" onclick="k('7')">7</button><button class="key" onclick="k('8')">8</button><button class="key" onclick="k('9')">9</button>
-                    <button class="key" style="color:#f00;" onclick="c()">CLR</button>
-                    <button class="key" onclick="k('0')">0</button>
-                    <button class="key" style="color:#f00;" onclick="e()">EXE</button>
-                </div>
-            </div>
+    <div class="screen" id="S3">
+        <div style="font-family:'Special Elite'; color:#f00; margin-bottom:10px;">DECRYPTING...</div>
+        <div style="width:200px; height:2px; background:#300; position:relative;">
+            <div id="FILL" style="position:absolute; left:0; top:0; height:100%; background:#f00; width:0%;"></div>
         </div>
+    </div>
 
-        <div class="screen" id="S3">
-            <div style="font-family:'Special Elite'; color:#f00;">DECRYPTING...</div>
-            <div class="loading-bar"><div class="loading-fill" id="FILL"></div></div>
-        </div>
-
-        <div class="screen" id="S4">
-            <div class="report-box">
-                <div style="text-align:center; color:#f00; font-family:'Special Elite'; font-size:1.5rem; margin-bottom:20px;">機密檔案：CASE #0412</div>
-                <span class="tag">【聖瑪利亞孤兒院 St. Maria's Orphanage】</span>
-                <span class="tag">【特殊個案追蹤報告】</span>
-                受測者：Luca Veil<br>來自Veil家族的獨生子。（原生家族已於2004年火災中全員喪生）
-                <span class="tag">衝突紀錄：</span>
-                1月12日，受測者遭到院內其餘五名兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致雙手指關節✕✕。
-                <span class="tag">語言霸凌觀測：</span>
-                院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙綠眸注視著霸凌者，似是在觀察某種即將腐爛的標本。
-                <span class="tag">冷藏室事件：</span>
-                為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣，他從未試圖求救。
-                <p style="border-top:1px dashed #600; margin-top:20px; padding-top:15px; font-style:italic; color:#944;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
-                <button class="btn" style="width:100%; margin-top:30px;" onclick="finalRun()">PURGE EXIT</button>
-            </div>
+    <div class="screen" id="S4">
+        <div class="report-box">
+            <div style="text-align:center; color:#f00; font-family:'Special Elite'; font-size:1.4rem; margin-bottom:15px;">機密檔案：CASE #0412</div>
+            <span class="tag">【聖瑪利亞孤兒院】</span>
+            受測者：Luca Veil<br>來自Veil家族的獨生子。（原生家族已於2004年火災中全員喪生）
+            <span class="tag">衝突紀錄：</span>
+            1月12日，受測者遭到院內其餘五名兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的金屬扣。受測者全程未發出尖叫，僅以雙手死死護住目標物，導致雙手指關節✕✕。
+            <span class="tag">冷藏室事件：</span>
+            為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。
+            <p style="border-top:1px dashed #600; margin-top:20px; padding-top:10px; font-style:italic; color:#944;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
+            <button class="btn" style="width:100%; margin-top:20px;" onclick="finish()">PURGE EXIT</button>
         </div>
     </div>
 
     <div id="end-screen">
-        <div class="end-text" id="final-t1">YOU DID WELL.</div>
-        <div class="end-text" style="font-size: 10vw; text-shadow: 0 0 10px #f00;" id="final-t2">NOW RUN.</div>
+        <div class="final-msg" id="end1">YOU DID WELL.</div>
+        <div class="final-msg" id="end2" style="color:#f00; text-shadow: 0 0 10px #f00;">NOW RUN.</div>
     </div>
 
-    <div id="crash-screen">
-        <div class="rebooting">REBOOTING...</div>
-    </div>
+    <div id="crash-layer" style="position:fixed; inset:0; background:#000; z-index:20000; display:none; overflow:hidden;"></div>
 
     <script>
-        "use strict";
         let stage = 1; let input = ""; let err = 0;
         const ans = { 1: "1", 2: "4", 3: "12" };
         const titles = { 1: "STAGE 01: 生還者", 2: "STAGE 02: 耐受測試", 3: "STAGE 03: 捏造血緣" };
 
         // 打字機
-        const txt = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室的保險箱嗎？";
-        let idx = 0;
-        function type() {
-            if (idx < txt.length) {
-                document.getElementById('T1').innerHTML += txt[idx] === '\n' ? '<br>' : txt[idx];
-                idx++;
-                setTimeout(type, (txt[idx-1] === '。' || txt[idx-1] === '\n') ? 400 : 40);
-            } else {
-                document.getElementById('B1').style.opacity = "1";
+        window.onload = () => {
+            const txt = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室的保險箱嗎？";
+            let i = 0;
+            function type() {
+                if (i < txt.length) {
+                    document.getElementById('T1').innerHTML += txt[i] === '\n' ? '<br>' : txt[i];
+                    i++; setTimeout(type, (txt[i-1]==='。' || txt[i-1]==='\n') ? 400 : 40);
+                } else { document.getElementById('B1').style.opacity = "1"; }
             }
-        }
-        window.onload = type;
+            type();
+        };
 
-        // 亂碼效果 (0.07s)
+        // 亂碼跳動 (0.07s)
         setInterval(() => {
             const n = document.getElementById('NOISE');
             if(n) {
-                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789✕†∑ø";
-                let s = ""; for(let i=0; i<25; i++) s += chars[Math.floor(Math.random()*chars.length)];
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789✕!#$";
+                let s = ""; for(let j=0; j<20; j++) s += chars[Math.floor(Math.random()*chars.length)];
                 n.innerText = s;
             }
         }, 70);
@@ -173,7 +180,7 @@
             input = ""; refresh();
         }
 
-        function k(n) { let limit = (stage === 3) ? 2 : 1; if (input.length < limit) { input += n; refresh(); } }
+        function k(n) { let lim = (stage === 3) ? 2 : 1; if(input.length < lim) { input += n; refresh(); } }
         function c() { input = ""; refresh(); }
         function refresh() {
             const d = document.getElementById('DISP');
@@ -194,60 +201,34 @@
                     }
                 }, 100);
             } else {
-                err++;
-                if (err >= 3) crash();
+                err++; if(err >= 3) triggerCrash();
                 else { document.getElementById('DISP').innerText = "ERR"; setTimeout(c, 600); }
             }
         }
 
-        // --- 失敗結局 (NO或錯誤三次)：數據洪水與重啟 ---
-        function crash() {
-            document.getElementById('S1').style.display = "none";
-            document.getElementById('S2').style.display = "none";
-            const cs = document.getElementById('crash-screen');
-            cs.style.display = "block";
-            
-            // 亂碼洪水生成
+        function triggerCrash() {
+            const cl = document.getElementById('crash-layer');
+            cl.style.display = "block";
             setInterval(() => {
-                const words = ["DEAD", "VOID", "ERR", "✕✕✕", "FATAL", "HELP", "†", "SYSTEM_FAIL"];
-                const g = document.createElement('div');
-                g.className = 'glitch-txt';
-                g.style.left = Math.random()*90 + '%'; g.style.top = Math.random()*90 + '%';
-                g.style.fontSize = (Math.random()*12 + 4) + 'vw';
-                g.innerText = words[Math.floor(Math.random()*words.length)];
-                cs.appendChild(g);
-                if(cs.children.length > 40) cs.removeChild(cs.children[1]); // 不刪除 REBOOTING
-            }, 30);
-            
-            setTimeout(() => location.reload(), 8000); // 8秒後重啟
+                const div = document.createElement('div');
+                div.className = "crash-txt";
+                div.style.left = Math.random()*90+'%'; div.style.top = Math.random()*90+'%';
+                div.style.fontSize = Math.random()*10+2+'vw';
+                div.innerText = "FATAL_ERROR_REBOOTING";
+                cl.appendChild(div);
+                if(cl.children.length > 30) cl.removeChild(cl.children[0]);
+            }, 50);
+            setTimeout(() => location.reload(), 4000);
         }
 
-        // --- 成功結局 (YOU DID WELL. NOW RUN.) ---
-        function finalRun() {
-            // 1. 關閉報告書畫面，開啟結局畫面
-            document.getElementById('S4').style.display = "none";
-            document.getElementById('end-screen').style.display = "flex";
-            
-            // 2. 打字機效果緩慢打出 YOU DID WELL.
-            const t1 = document.getElementById('final-t1');
-            setTimeout(() => {
-                t1.style.opacity = 1; // 顯示
-            }, 1000); // 停頓一秒後出現
-
-            // 3. 停頓並打出 NOW RUN.
-            const t2 = document.getElementById('final-t2');
-            setTimeout(() => {
-                t2.style.opacity = 1;
-            }, 3500); // YOU DID WELL 出現後兩點五秒
-
-            // 4. 最後泛白炸裂，重置系統
-            setTimeout(() => {
-                document.getElementById('end-screen').classList.add('ending-active');
-            }, 6000); // NOW RUN 出現後兩點五秒
-
-            setTimeout(() => {
-                location.reload(); // 泛白完成後重置
-            }, 7000);
+        function finish() {
+            document.getElementById('S4').classList.remove('active');
+            const es = document.getElementById('end-screen');
+            es.style.display = "flex";
+            setTimeout(() => { document.getElementById('end1').style.opacity = "1"; }, 1000);
+            setTimeout(() => { document.getElementById('end2').style.opacity = "1"; }, 3000);
+            setTimeout(() => { es.classList.add('white-out'); }, 5500);
+            setTimeout(() => { location.reload(); }, 7000);
         }
     </script>
 </body>
