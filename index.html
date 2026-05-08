@@ -16,12 +16,14 @@
             min-height: 100vh; overflow: hidden; 
         }
 
+        /* 掃描線特效 */
         body::before {
             content: " "; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
+        /* 初始畫面 */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; 
             flex-direction: column; justify-content: center; align-items: center; 
@@ -36,6 +38,7 @@
             display: flex; gap: 30px; margin-top: 40px; 
             opacity: 0; visibility: hidden; transition: opacity 1.5s ease-in; 
         }
+
         .btn { 
             background: none; border: 1px solid #f00; color: #f00; 
             padding: 12px 50px; font-size: 1.2rem; cursor: pointer; 
@@ -44,41 +47,47 @@
         .btn:hover { background: #f00; color: #000; box-shadow: 0 0 20px #f00; }
         .btn-no { border-color: #444; color: #666; }
 
+        /* 終端機主體 */
         .terminal-container { 
             width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; 
             border: 1px solid #800; background: rgba(10, 0, 0, 0.95);
         }
         #glitch-code { font-family: monospace; font-size: 0.75rem; color: #500; margin-top: 5px; height: 1.2rem; overflow: hidden; letter-spacing: 1px; }
+        
         #display { 
             background: rgba(20, 0, 0, 0.6); border: 1px solid #500; color: #f00; height: 75px; line-height: 75px; 
             text-align: center; font-size: 2.2rem; letter-spacing: 12px; margin: 20px 0;
             font-family: 'Special Elite', cursive; text-shadow: 0 0 15px #f00;
+            transition: all 0.1s;
         }
+
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
+        .key:active { background: #f00; color: #000; }
 
-        #death-screen {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 100000; overflow-y: auto; padding: 20px;
+        /* 過渡動畫 Overlay */
+        #loading-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 100; flex-direction: column; justify-content: center; align-items: center;
         }
-        #flood-content { color: #f00; font-weight: bold; font-family: "Noto Serif TC", serif; font-size: 1.6rem; line-height: 1.5; word-break: break-all; }
-        .en-flood { font-family: 'Special Elite', cursive; color: #fff; text-shadow: 0 0 10px #f00; font-size: 1.8rem; }
-        .shake-active { animation: screen-shake 0.3s infinite; }
-        @keyframes screen-shake { 0% { transform: translate(0,0); } 20% { transform: translate(5px, 5px); } 40% { transform: translate(-5px, -5px); } 100% { transform: translate(0,0); } }
+        .loading-text { font-family: monospace; color: #f00; font-size: 1rem; letter-spacing: 2px; margin-bottom: 10px; }
 
+        /* 追蹤報告檔案 */
         #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
         .evidence-folder { 
-            position: relative; width: 95%; max-width: 620px; padding: 20px 45px 45px 45px; color: #d22; 
+            position: relative; width: 95%; max-width: 620px; padding: 40px 45px 80px 45px; color: #d22; 
             max-height: 90vh; overflow-y: auto; border: 1px solid #600; line-height: 1.8; background: #0a0000;
-            box-shadow: inset 0 0 50px #000; display: flex; flex-direction: column;
+            box-shadow: inset 0 0 50px #000;
         }
-        /* TOP SECRET 修正位置：置頂正中央且不擋文字 */
-        .stamp-container { text-align: center; margin-bottom: 20px; }
+        
+        /* TOP SECRET 縮小並移至右下角 */
         .stamp {
-            display: inline-block; border: 4px solid #f00; color: #f00; font-family: 'Special Elite', cursive; 
-            font-size: 1.5rem; padding: 5px 30px; opacity: 0.8; font-weight: bold; 
-            text-shadow: 0 0 10px #f00; transform: rotate(-1deg); background: #0a0000;
+            position: absolute; bottom: 30px; right: 40px;
+            border: 2px solid #f00; color: #f00; font-family: 'Special Elite', cursive; 
+            font-size: 1rem; padding: 4px 15px; opacity: 0.7; font-weight: bold; 
+            text-shadow: 0 0 8px #f00; transform: rotate(-15deg); pointer-events: none;
         }
+
         .report-section { margin-bottom: 25px; padding-left: 15px; border-left: 2px solid #500; }
         .report-label { color: #777; font-size: 0.85rem; display: block; margin-bottom: 5px; font-weight: bold; }
 
@@ -86,8 +95,8 @@
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 100001; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
-        .success-text-zh { color: #f00; font-size: 1.6rem; letter-spacing: 5px; text-shadow: 0 0 10px #f00; margin-bottom: 15px; }
-        .success-text-en { font-family: 'Special Elite', cursive; font-size: 2.2rem; color: #fff; text-shadow: 0 0 20px #f00; letter-spacing: 2px; }
+        #death-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100000; overflow-y: auto; padding: 20px; }
+        #flood-content { color: #f00; font-weight: bold; font-family: "Noto Serif TC", serif; font-size: 1.6rem; line-height: 1.5; word-break: break-all; }
     </style>
 </head>
 <body>
@@ -101,6 +110,11 @@
 </div>
 
 <div class="terminal-container" id="main-terminal">
+    <div id="loading-overlay">
+        <div class="loading-text" id="load-msg">SYNCHRONIZING...</div>
+        <div id="load-glitch" style="font-family:monospace; font-size:0.6rem; color:#400;"></div>
+    </div>
+
     <div style="text-align:center;">
         <p id="current-gate" style="color:#f00; font-weight:bold; letter-spacing:2px; margin-bottom:0;">[ 驗證程序一：身份殘留 ]</p>
         <div id="glitch-code">SYSTEM_SCANNING...</div>
@@ -118,11 +132,7 @@
 
 <div id="secret-overlay">
     <div class="evidence-folder">
-        <div class="stamp-container">
-            <div class="stamp">TOP SECRET</div>
-        </div>
-        
-        <h2 style="font-size:1.05rem; text-align:center; margin-bottom:30px; letter-spacing:1px; color:#f00; line-height:1.4;">【聖瑪利亞孤兒院St. Maria's Orphanage - 特殊個案追蹤報告】</h2>
+        <h2 style="font-size:1.1rem; text-align:center; margin-bottom:30px; letter-spacing:1px; color:#f00;">【聖瑪利亞孤兒院St. Maria's Orphanage - 特殊個案追蹤報告】</h2>
         
         <div class="report-section">
             <span class="report-label">受測者</span>
@@ -144,17 +154,19 @@
             為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。
         </div>
 
-        <div class="report-section" style="border:none; background:rgba(50,0,0,0.15); padding:15px; margin-top:10px;">
+        <div class="report-section" style="border:none; background:rgba(50,0,0,0.15); padding:15px;">
             <p style="margin:0; font-size:0.95rem; color:#b00;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
         </div>
 
         <button onclick="triggerSuccessEnd()" style="width:100%; background:none; color:#f00; border:1px solid #f00; padding:18px; margin-top:25px; cursor:pointer; letter-spacing:3px; font-weight:bold;">抹除存取紀錄 (PURGE)</button>
+        
+        <div class="stamp">TOP SECRET</div>
     </div>
 </div>
 
 <div id="success-ending">
-    <div class="success-text-zh">你做得很好，現在快跑吧。</div>
-    <div class="success-text-en">YOU DID WELL. RUN NOW.</div>
+    <div style="color:#f00; font-size:1.6rem; letter-spacing:5px;">你做得很好，現在快跑吧。</div>
+    <div style="font-family:'Special Elite'; font-size:2.2rem; color:#fff; text-shadow:0 0 20px #f00;">YOU DID WELL. RUN NOW.</div>
 </div>
 
 <div id="death-screen"><div id="flood-content"></div></div>
@@ -162,11 +174,7 @@
 <script>
     let currentMod = 1; let inputStr = ""; 
     const answers = { 1: "1", 2: "4", 3: "12" };
-    const gateTitles = { 
-        1: "[ 驗證程序一：身份殘留 ]", 
-        2: "[ 驗證程序二：耐受測試 ]", 
-        3: "[ 驗證程序三：捏造血緣 ]" 
-    };
+    const gateTitles = { 1: "[ 驗證程序一：身份殘留 ]", 2: "[ 驗證程序二：耐受測試 ]", 3: "[ 驗證程序三：捏造血緣 ]" };
 
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料都顯示無人生還，但那活下來的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
 
@@ -174,15 +182,14 @@
         if (i < text.length) {
             let char = text.charAt(i);
             document.getElementById(targetId).innerHTML += (char === '\n' ? '<br>' : char);
-            let delay = (char === '，' || char === '。' || char === '\n') ? 400 : 50;
-            setTimeout(() => typeWriter(text, i + 1, targetId, callback), delay);
+            setTimeout(() => typeWriter(text, i + 1, targetId, callback), (char === '，' || char === '。' ? 400 : 50));
         } else if (callback) callback();
     }
 
     window.onload = () => { 
         typeWriter(introTextRaw, 0, 'intro-text', () => {
-            const btnContainer = document.getElementById('intro-btn-container');
-            btnContainer.style.visibility = "visible"; btnContainer.style.opacity = "1";
+            const btn = document.getElementById('intro-btn-container');
+            btn.style.visibility = "visible"; btn.style.opacity = "1";
         }); 
     };
 
@@ -193,54 +200,14 @@
     }
 
     function updateGlitchCode() {
-        const chars = "0123456789ABCDEF";
-        let code = "";
-        for (let i = 0; i < 20; i++) {
-            if (i % 5 === 0) code += " 0x";
-            code += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
+        const chars = "0123456789ABCDEF"; let code = "";
+        for (let i = 0; i < 20; i++) { if (i % 5 === 0) code += " 0x"; code += chars.charAt(Math.floor(Math.random() * 16)); }
         document.getElementById('glitch-code').innerText = code;
-    }
-
-    let floodCount = 0;
-    const maxFlood = 800;
-    const phrases = ["快跑 ", "RUN ", "GET OUT ", "跑 ", "RUN! ", "HURRY "];
-
-    function triggerFloodTypewriter() {
-        document.getElementById('intro-screen').style.background = "#200";
-        document.getElementById('intro-text').innerHTML = "<span style='color:red; font-weight:bold;'>跑。RUN.</span>";
-        document.getElementById('intro-btn-container').style.display = "none";
-        setTimeout(() => {
-            document.getElementById('death-screen').style.display = "block";
-            document.body.classList.add('shake-active');
-            startTypingRun();
-        }, 800);
-    }
-
-    function startTypingRun() {
-        if (floodCount >= maxFlood) {
-            setTimeout(() => { document.body.innerHTML = ""; setTimeout(() => location.reload(), 2000); }, 1200);
-            return;
-        }
-        const floodContent = document.getElementById('flood-content');
-        const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-        if (/[a-zA-Z]/.test(randomPhrase)) {
-            floodContent.innerHTML += `<span class="en-flood">${randomPhrase}</span>`;
-        } else {
-            floodContent.innerHTML += randomPhrase;
-        }
-        const ds = document.getElementById('death-screen');
-        ds.scrollTop = ds.scrollHeight;
-        floodCount++;
-        setTimeout(startTypingRun, Math.max(1, 45 - (floodCount / 18)));
     }
 
     function press(n) {
         let max = (currentMod === 3) ? 2 : 1;
-        if (inputStr.length < max) { 
-            inputStr += n; 
-            document.getElementById('display').innerText = inputStr; 
-        }
+        if (inputStr.length < max) { inputStr += n; document.getElementById('display').innerText = inputStr; }
     }
 
     function clearD() { 
@@ -250,34 +217,59 @@
     
     function submit() {
         if (inputStr === answers[currentMod]) {
-            if (currentMod < 3) {
-                currentMod++;
-                document.getElementById('current-gate').innerText = gateTitles[currentMod];
-                inputStr = "";
-                // 進入第三關時，Display 切換為 --
-                document.getElementById('display').innerText = (currentMod === 3) ? "--" : "-";
-            } else {
-                showReport();
-            }
+            showTransition(() => {
+                if (currentMod < 3) {
+                    currentMod++;
+                    document.getElementById('current-gate').innerText = gateTitles[currentMod];
+                    clearD();
+                } else {
+                    document.getElementById('main-terminal').style.display = 'none';
+                    document.getElementById('secret-overlay').style.display = 'flex';
+                }
+            });
         } else {
             document.getElementById('display').innerText = "ERROR";
             setTimeout(clearD, 500);
         }
     }
 
-    function showReport() {
-        document.getElementById('main-terminal').style.display = 'none';
-        document.getElementById('secret-overlay').style.display = 'flex';
+    // 過渡動畫邏輯
+    function showTransition(callback) {
+        const overlay = document.getElementById('loading-overlay');
+        const glitchBox = document.getElementById('load-glitch');
+        overlay.style.display = 'flex';
+        
+        let timer = 0;
+        const interval = setInterval(() => {
+            glitchBox.innerText = Math.random().toString(16).substring(2, 15).toUpperCase();
+            timer += 100;
+            if (timer > 1500) {
+                clearInterval(interval);
+                overlay.style.display = 'none';
+                glitchBox.innerText = "";
+                callback();
+            }
+        }, 80).
     }
 
     function triggerSuccessEnd() {
         document.getElementById('secret-overlay').style.display = 'none';
         document.getElementById('success-ending').style.display = 'flex';
-        setTimeout(() => {
-            document.body.style.transition = "2s";
-            document.body.style.opacity = "0";
-            setTimeout(() => location.reload(), 2000);
-        }, 6000);
+        setTimeout(() => { document.body.style.transition = "2s"; document.body.style.opacity = "0"; setTimeout(() => location.reload(), 2000); }, 6000);
+    }
+
+    function triggerFloodTypewriter() {
+        document.getElementById('intro-screen').style.background = "#200";
+        document.getElementById('death-screen').style.display = "block";
+        startTypingRun();
+    }
+
+    function startTypingRun() {
+        const floodContent = document.getElementById('flood-content');
+        floodContent.innerHTML += "RUN ";
+        const ds = document.getElementById('death-screen');
+        ds.scrollTop = ds.scrollHeight;
+        setTimeout(startTypingRun, 10);
     }
 </script>
 </body>
