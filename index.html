@@ -5,144 +5,143 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TERMINAL | St. Maria's Orphanage</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Special+Elite&display=swap');
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body { 
-            background: #000; color: #900; font-family: "Noto Serif TC", serif; 
+            background: radial-gradient(circle, #1a0000 0%, #000 100%); 
+            color: #900; font-family: "Noto Serif TC", serif; 
             margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; 
             min-height: 100vh; overflow: hidden; 
         }
 
-        /* 界面組件 */
+        /* 全局掃描線特效 */
+        body::before {
+            content: " ";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        }
+
+        /* 介面外框發光 */
+        .terminal-container, .evidence-folder {
+            border: 1px solid #800;
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.2), inset 0 0 10px rgba(139, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            background: rgba(10, 0, 0, 0.95);
+        }
+
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 9999; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; padding: 20px; text-align: center;
         }
-        #intro-text { max-width: 90%; color: #a00; font-size: 1.05rem; line-height: 1.8; margin-bottom: 40px; }
         
-        .choice-container { display: flex; gap: 20px; }
+        #intro-text { max-width: 90%; color: #c33; font-size: 1.05rem; line-height: 2; text-shadow: 0 0 8px rgba(255,0,0,0.4); }
+        
         .btn { 
-            background: rgba(255, 0, 0, 0.05); border: 2px solid #f00; color: #f00; 
-            padding: 15px 40px; font-size: 1.2rem; cursor: pointer; font-weight: bold; transition: 0.3s;
+            background: none; border: 1px solid #f00; color: #f00; 
+            padding: 12px 35px; font-size: 1.1rem; cursor: pointer; 
+            transition: all 0.2s; letter-spacing: 4px; position: relative; overflow: hidden;
         }
+        .btn:hover { background: #f00; color: #000; box-shadow: 0 0 15px #f00; }
 
-        /* 死亡與震動特效 */
-        @keyframes dead-shake {
-            0% { transform: translate(2px, 1px); }
-            50% { transform: translate(-3px, -2px); }
-            100% { transform: translate(2px, 1px); }
-        }
-        .death-active { animation: dead-shake 0.1s infinite; background: #300 !important; }
-
-        /* 終端機 */
         .terminal-container { 
-            width: 95%; max-width: 450px; background: #050000; border: 2px solid #800; padding: 25px; display: none; flex-direction: column; 
+            width: 95%; max-width: 420px; padding: 30px; display: none; flex-direction: column; 
         }
-        #display { 
-            background: #000; border: 1px solid #500; color: #f00; height: 80px; line-height: 80px; 
-            text-align: center; font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 25px; text-shadow: 0 0 10px #f00;
-        }
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .key { background: #0a0000; border: 1px solid #600; color: #a00; padding: 20px 0; font-size: 1.5rem; cursor: pointer; }
-        .key:active { background: #a00; color: #000; }
-        #status-msg { font-size: 0.9rem; color: #700; text-align: center; margin-top: 20px; min-height: 1.5em; }
 
-        /* 報告畫面 */
+        #display { 
+            background: rgba(20, 0, 0, 0.5); border: 1px solid #500; color: #f00; height: 70px; line-height: 70px; 
+            text-align: center; font-size: 2.2rem; letter-spacing: 12px; margin-bottom: 25px;
+            text-shadow: 0 0 15px #f00; font-family: 'Special Elite', cursive;
+        }
+
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .key { 
+            background: rgba(30, 0, 0, 0.4); border: 1px solid #400; color: #a55; 
+            padding: 18px 0; font-size: 1.4rem; cursor: pointer; transition: 0.1s;
+        }
+        .key:active { transform: scale(0.95); background: #800; color: #fff; }
+
+        /* 秘密報告 - 打字機排版 */
         #secret-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 10000; justify-content: center; align-items: center; padding: 15px; 
+            background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; padding: 15px; 
         }
         .evidence-folder { 
-            width: 100%; max-width: 500px; background: #120000; color: #c00; padding: 25px; 
-            max-height: 90vh; overflow-y: auto; border: 1px solid #600; position: relative; 
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1);
+            width: 100%; max-width: 480px; padding: 40px; color: #d22; 
+            max-height: 85vh; overflow-y: auto; border-top: 5px solid #a00;
         }
-        .report-header { border-bottom: 2px solid #800; padding-bottom: 15px; margin-bottom: 20px; }
-        .report-title { color: #c00; font-size: 1.1rem; margin: 0; line-height: 1.5; font-weight: bold; }
-        .report-content p { line-height: 1.8; margin: 15px 0; font-size: 0.95rem; text-align: justify; }
+        .report-content { font-family: "Courier New", Courier, monospace; }
         
-        .bottom-stamp-area { text-align: right; margin-top: 25px; }
         .bottom-stamp { 
-            border: 3px solid #f00; color: #f00; padding: 5px 15px; font-weight: bold; 
-            display: inline-block; transform: rotate(-8deg); opacity: 0.6; font-family: sans-serif;
-            letter-spacing: 2px; font-size: 0.9rem;
+            border: 4px double #f00; color: #f00; padding: 8px 20px; font-weight: bold; 
+            display: inline-block; transform: rotate(-12deg); opacity: 0.8;
+            font-size: 1.2rem; margin-top: 20px;
         }
 
-        /* 最終結局畫面 */
+        /* 打字機動畫 */
+        .typing { overflow: hidden; border-right: .15em solid orange; white-space: nowrap; animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite; }
+
         #ending-screen {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 10001; flex-direction: column; 
-            justify-content: center; align-items: center; text-align: center; color: #f00; padding: 20px;
+            background: #000; z-index: 10001; flex-direction: column; justify-content: center; align-items: center;
         }
-        .fade-in-text { animation: fadeIn 4s forwards; opacity: 0; font-style: italic; font-size: 1.3rem; line-height: 1.6; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div id="intro-screen">
-    <div id="intro-text">
+    <div id="intro-text" style="text-align: left; border-left: 2px solid #500; padding-left: 20px;">
         2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。<br>
         縱然所有資料都顯示無人生還，<br>
         但那活下來的孩子，學會了服從規則。<br>
         他在2✕✕✕年✕✕月12號被迫接受了新的姓氏。加入了不屬於他的家族。<br>
         被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。<br><br>
-        <span style="color: #f00; font-weight: bold;">你確定要進入地下室嗎？</span>
+        <span style="color: #f00; letter-spacing: 2px;">你確定要進入地下室嗎？</span>
     </div>
-    <div class="choice-container" id="choices">
-        <button class="btn" onclick="startGame()">YES</button>
-        <button class="btn" style="border-color:#400; color:#555;" onclick="triggerDeath('exit')">NO</button>
+    <div class="choice-container" id="choices" style="margin-top:30px;">
+        <button class="btn" onclick="startGame()">存取</button>
+        <button class="btn" style="border-color:#333; color:#444;" onclick="triggerDeath('exit')">撤退</button>
     </div>
 </div>
 
 <div class="terminal-container" id="main-terminal">
-    <div style="font-size:0.7rem; color:#800; text-align:center; margin-bottom:10px; letter-spacing:2px;">INTERNAL ACCESS // ST. MARIA'S ORPHANAGE</div>
+    <div style="font-size:0.65rem; color:#600; text-align:center; margin-bottom:15px; letter-spacing:3px; opacity:0.7;">DATA ENCRYPTION STANDARD // LEVEL 04</div>
     <div style="text-align:center; margin-bottom:20px;">
-        <p id="current-gate" style="color:#f00; font-style:italic; font-size:0.9rem;">驗證程序一：身份殘留</p>
-        <p id="hint-text" style="color:#400; font-size:0.75rem; letter-spacing:1px; margin-top:5px;">STATUS: ENCRYPTED_DATA_SECTOR</p>
+        <p id="current-gate" style="color:#f00; letter-spacing:2px; font-size:1rem; margin:0;">[ 驗證程序一：身份殘留 ]</p>
+        <div style="width: 100%; height: 1px; background: linear-gradient(90deg, transparent, #800, transparent); margin: 10px 0;"></div>
+        <p style="color:#500; font-size:0.7rem;">STATUS: ENCRYPTED_DATA_SECTOR</p>
     </div>
     <div id="display">-</div>
     <div class="keypad">
         <button class="key" onclick="press('1')">1</button><button class="key" onclick="press('2')">2</button><button class="key" onclick="press('3')">3</button>
         <button class="key" onclick="press('4')">4</button><button class="key" onclick="press('5')">5</button><button class="key" onclick="press('6')">6</button>
         <button class="key" onclick="press('7')">7</button><button class="key" onclick="press('8')">8</button><button class="key" onclick="press('9')">9</button>
-        <button class="key" style="color:#f00; font-size:1.1rem;" onclick="clearD()">CLR</button>
+        <button class="key" style="color:#f00;" onclick="clearD()">CLR</button>
         <button class="key" onclick="press('0')">0</button>
-        <button class="key" style="color:#f00; font-size:1.1rem;" onclick="submit()">EXE</button>
+        <button class="key" style="color:#f00;" onclick="submit()">EXE</button>
     </div>
-    <div id="status-msg">等待授權輸入...</div>
+    <div id="status-msg" style="margin-top:20px; color:#500; text-align:center; font-family:monospace; font-size:0.8rem;">READY_</div>
 </div>
 
 <div id="secret-overlay">
-    <div class="evidence-folder">
-        <div class="report-header">
-            <h2 class="report-title">【聖瑪利亞孤兒院St. Maria's Orphanage - 特殊個案追蹤報告】</h2>
+    <div class="evidence-folder" id="report-box">
         </div>
-        <div class="report-content">
-            <p><strong>受測者：</strong>Luca</p>
-            <p><strong>姓氏：</strong>Veil（原生家族已於 2004 年火災中全員喪生）</p>
-            <hr style="border:0; border-top:1px dashed #500; margin: 20px 0;">
-            <p><strong>衝突紀錄：</strong>1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。</p>
-            <p><strong>語言霸凌觀測：</strong>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
-            <p><strong>冷藏室事件：</strong>為了測試其耐受極限，他在 4 月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
-            <p style="color: #ff4d4d; font-weight: bold; font-style: italic; margin-top: 25px;">這一切似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
-            <div class="bottom-stamp-area">
-                <div class="bottom-stamp">TOP SECRET</div>
-            </div>
-        </div>
-        <button onclick="triggerEnd()" style="width:100%; background:#600; color:#000; border:none; padding:18px; margin-top:30px; font-weight:bold; cursor:pointer; letter-spacing:2px;">抹除存取紀錄</button>
-    </div>
 </div>
 
 <div id="ending-screen">
-    <div class="fade-in-text">你做得很好，但快躲起來吧。</div>
-    <p style="color: #400; font-size: 0.7rem; margin-top: 50px;">紀錄已完全銷毀</p>
+    <div class="fade-in-text" style="color:#f00; font-size:1.4rem; letter-spacing:2px; font-style:italic;">你做得很好，但快躲起來吧。</div>
+    <p style="color: #300; font-size: 0.7rem; margin-top: 40px; letter-spacing: 5px;">RECORDS_PURGED</p>
 </div>
 
 <script>
     let currentMod = 1; let inputStr = ""; let failCount = 0;
     const answers = { 1: "1", 2: "4", 3: "12" };
-    const gates = { 1: "驗證程序一：身份殘留", 2: "驗證程序二：耐受體質", 3: "驗證程序三：捏造血緣" };
+    const gates = { 1: "[ 驗證程序一：身份殘留 ]", 2: "[ 驗證程序二：耐受體質 ]", 3: "[ 驗證程序三：捏造血緣 ]" };
+
+    const reportText = `【聖瑪利亞孤兒院 特殊個案追蹤報告】\n\n受測者：Luca\n姓氏：Veil（原生家族已於2004年火災中全員喪生）\n\n衝突紀錄：1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物。\n\n語言霸凌觀測：院內兒童頻繁以「異類」、「雜種」等詞彙進行排擠。受測者表現出極強的情感隔離，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。\n\n冷藏室事件：為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。\n\n這一切似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。`;
 
     function startGame() {
         document.getElementById('intro-screen').style.display = 'none';
@@ -150,31 +149,24 @@
         updateHint();
     }
 
+    function typeWriter(text, i, fnCallback) {
+        if (i < text.length) {
+            document.getElementById("report-box").innerHTML = text.substring(0, i+1) +'<span aria-hidden="true"></span>';
+            setTimeout(function() { typeWriter(text, i + 1, fnCallback) }, 30);
+        } else {
+            document.getElementById("report-box").innerHTML += `<br><div style="text-align:right"><div class="bottom-stamp">TOP SECRET</div></div><button onclick="triggerEnd()" style="width:100%; background:#400; color:#f00; border:1px solid #f00; padding:15px; margin-top:30px; cursor:pointer; font-weight:bold;">抹除存取紀錄</button>`;
+        }
+    }
+
     function triggerEnd() {
         document.getElementById('secret-overlay').style.display = 'none';
-        const endScreen = document.getElementById('ending-screen');
-        endScreen.style.display = 'flex';
+        document.getElementById('ending-screen').style.display = 'flex';
     }
 
     function triggerDeath(reason) {
-        const screen = document.getElementById('intro-screen');
-        const text = document.getElementById('intro-text');
-        const main = document.getElementById('main-terminal');
-        main.style.display = 'none';
-        screen.style.display = 'flex';
-        document.getElementById('choices').style.display = 'none';
-        
-        if (reason === 'exit') {
-            text.innerHTML = "<span style='color:#f00; font-size:1.2rem; font-style:italic;'>你感覺到暗處有人在看著你...</span>";
-            setTimeout(() => {
-                screen.classList.add('death-active');
-                text.innerHTML = "<h1 style='color:#fff; font-size:5rem; letter-spacing:15px; margin:0;'>DEAD</h1><p style='color:#f00; font-weight:bold;'>你不該回頭的。</p>";
-            }, 1500);
-        } else {
-            screen.classList.add('death-active');
-            text.innerHTML = "<h1 style='color:#fff; font-size:5rem; letter-spacing:15px; margin:0;'>DEAD</h1><p style='color:#f00; font-weight:bold;'>系統偵測到入侵者。</p>";
-        }
-        setTimeout(() => { location.reload(); }, 4500);
+        document.body.style.animation = "dead-shake 0.1s infinite";
+        document.body.innerHTML = `<div style="color:#f00; font-size:3rem; font-weight:bold; letter-spacing:10px;">TERMINATED</div>`;
+        setTimeout(() => { location.reload(); }, 3000);
     }
 
     function updateHint() {
@@ -194,32 +186,26 @@
     function submit() {
         if (inputStr === "") return;
         const status = document.getElementById('status-msg');
-        status.innerText = "驗證中...";
+        status.innerText = "VERIFYING...";
         setTimeout(() => {
             if (inputStr === answers[currentMod]) {
                 if (currentMod < 3) {
                     currentMod++;
                     document.getElementById('current-gate').innerText = gates[currentMod];
-                    status.innerText = "驗證成功。";
-                    status.style.color = "#0f0";
-                    setTimeout(() => { status.style.color = "#700"; status.innerText = "等待授權輸入..."; }, 800);
+                    status.innerText = "SUCCESS.";
                     updateHint();
                 } else {
                     document.getElementById('main-terminal').style.display = 'none';
                     document.getElementById('secret-overlay').style.display = 'flex';
+                    typeWriter(reportText, 0);
                 }
             } else {
                 failCount++;
-                if (failCount >= 5) {
-                    triggerDeath('hack');
-                } else {
-                    status.innerText = "拒絕存取。";
-                    status.style.color = "#f00";
-                    setTimeout(() => { status.style.color = "#700"; status.innerText = `剩餘次數: ${5 - failCount}`; }, 800);
-                    updateHint();
-                }
+                status.innerText = "DENIED. ATTEMPT " + failCount + "/5";
+                if (failCount >= 5) triggerDeath();
+                updateHint();
             }
-        }, 800);
+        }, 600);
     }
 </script>
 </body>
