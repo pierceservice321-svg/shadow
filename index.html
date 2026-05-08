@@ -11,33 +11,41 @@
         html.death-active { animation: extremeStrobe 0.03s infinite; }
         body { background: #000; color: #900; font-family: "Noto Serif TC", serif; margin: 0; padding: 0; overflow: hidden; width: 100vw; height: 100vh; }
 
-        #bg-glitch { position: fixed; inset: 0; font-family: monospace; font-size: 11px; color: rgba(255, 0, 0, 0.1); pointer-events: none; white-space: pre-wrap; z-index: 1; }
+        #bg-glitch { position: fixed; inset: 0; font-family: monospace; font-size: 11px; color: rgba(255, 0, 0, 0.12); pointer-events: none; white-space: pre-wrap; z-index: 1; }
 
-        /* 前傳佈局 */
-        #intro-screen { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; background: #000; padding: 20px; }
-        #intro-text { width: 100%; max-width: 500px; color: #c33; font-size: 0.95rem; line-height: 2.1; border-left: 2px solid #600; padding-left: 15px; min-height: 400px; margin-bottom: 25px; overflow-y: auto; }
+        /* 前傳介面 */
+        #intro-screen { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; background: #000; padding: 25px; }
+        #intro-text { width: 100%; max-width: 500px; color: #c33; font-size: 0.95rem; line-height: 2.3; border-left: 2px solid #600; padding-left: 15px; min-height: 400px; margin-bottom: 30px; }
         #intro-btn-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 320px; opacity: 0; transition: opacity 1.5s; }
-        .btn { background: none; border: 1px solid #f00; color: #f00; padding: 15px 0; font-size: 1.1rem; cursor: pointer; letter-spacing: 4px; font-weight: bold; text-align: center; font-family: 'Special Elite'; }
+        .btn { background: none; border: 1px solid #f00; color: #f00; padding: 15px 0; font-size: 1rem; cursor: pointer; letter-spacing: 4px; font-weight: bold; text-align: center; font-family: 'Special Elite'; }
 
-        /* 終端機佈局 */
-        .terminal-container { position: relative; width: 92%; max-width: 380px; padding: 25px; display: none; flex-direction: column; border: 1px solid #800; background: rgba(10, 0, 0, 0.98); z-index: 10; box-shadow: 0 0 20px #500; }
+        /* 終端機介面 */
+        .terminal-container { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 92%; max-width: 380px; padding: 25px; display: none; flex-direction: column; border: 1px solid #800; background: rgba(10, 0, 0, 0.98); z-index: 10; }
         #gate-title { font-family: 'Special Elite'; color: #f00; text-align: center; font-size: 1.1rem; margin-bottom: 5px; }
-        #stage-noise { font-family: monospace; font-size: 0.8rem; color: #600; text-align: center; height: 1.2em; margin-bottom: 15px; overflow: hidden; }
+        #stage-noise { font-family: monospace; font-size: 0.8rem; color: #500; text-align: center; height: 1.2em; margin-bottom: 15px; overflow: hidden; }
         
-        /* 核心優化：輸入框內容全置中 */
+        /* 核心置中修正 */
         #display { 
             background: rgba(30, 0, 0, 0.9); border: 1px solid #700; color: #f00; 
-            height: 75px; margin-bottom: 25px; font-family: 'Special Elite'; 
-            font-size: 2.4rem; letter-spacing: 8px; text-indent: 8px; /* text-indent 抵銷末尾字距實現絕對居中 */
-            box-shadow: inset 0 0 15px #000;
-            display: flex; justify-content: center; align-items: center; text-align: center;
+            height: 80px; margin-bottom: 25px; font-family: 'Special Elite'; 
+            font-size: 2.5rem; 
+            display: flex; justify-content: center; align-items: center; 
+            text-align: center;
+            letter-spacing: 8px;
+            padding-left: 8px; /* 抵銷 letter-spacing 導致的右偏，實現完美居中 */
+            box-shadow: inset 0 0 20px #000;
         }
         
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .key { background: rgba(50, 0, 0, 0.5); border: 1px solid #900; color: #c33; padding: 20px 0; font-size: 1.5rem; cursor: pointer; font-family: 'Special Elite'; }
-        .key-enter { color: #f00; font-size: 0.9rem; letter-spacing: 1px; }
+        .key-enter { color: #f00; font-size: 0.85rem; letter-spacing: 1px; }
 
-        /* 負片閃爍 */
+        /* 過場動畫 */
+        #loading-screen { display: none; position: fixed; inset: 0; background: #000; z-index: 500; justify-content: center; align-items: center; flex-direction: column; color: #f00; font-family: 'Special Elite'; }
+        .loader-bar { width: 200px; height: 2px; background: #300; margin-top: 15px; position: relative; }
+        .loader-fill { position: absolute; top: 0; left: 0; height: 100%; background: #f00; width: 0%; transition: 0.5s; }
+
+        /* 負片效果 */
         @keyframes extremeStrobe {
             0% { filter: invert(0) brightness(1); background: #000; }
             50% { filter: invert(1) brightness(15); background: #fff; }
@@ -50,9 +58,9 @@
 
         /* 完整報告 */
         #secret-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
-        .evidence-folder { width: 100%; max-height: 92vh; color: #d33; border: 1px solid #800; padding: 25px; background: #0d0000; line-height: 1.7; overflow-y: auto; font-size: 0.92rem; }
+        .evidence-folder { width: 100%; max-height: 92vh; color: #d33; border: 1px solid #800; padding: 25px; background: #0d0000; line-height: 1.8; overflow-y: auto; font-size: 0.9rem; }
         .report-section { margin-bottom: 20px; }
-        .report-section b { color: #f00; border-left: 3px solid #f00; padding-left: 8px; }
+        .report-section b { color: #f00; border-left: 3px solid #f00; padding-left: 8px; margin-bottom: 5px; display: inline-block; }
     </style>
 </head>
 <body>
@@ -65,6 +73,11 @@
         <button class="btn" onclick="startGame()">YES</button>
         <button class="btn" style="border-color:#333; color:#555;" onclick="triggerFlood()">NO</button>
     </div>
+</div>
+
+<div id="loading-screen">
+    <div id="load-msg">ACCESSING ENCRYPTED DATA...</div>
+    <div class="loader-bar"><div class="loader-fill" id="load-fill"></div></div>
 </div>
 
 <div class="terminal-container" id="main-terminal">
@@ -83,13 +96,13 @@
 
 <div id="secret-overlay">
     <div class="evidence-folder">
-        <h3 style="color:#f00; font-family:'Special Elite'; text-align:center;">CLASSIFIED REPORT #0412</h3>
+        <h3 style="color:#f00; font-family:'Special Elite'; text-align:center; border-bottom:1px solid #600; padding-bottom:10px;">CLASSIFIED REPORT: Luca Veil</h3>
         <div class="report-section"><b>【特殊個案追蹤報告】</b><br>受測者：Luca Veil<br>來自Veil家族的獨生子。（原生家族已於2004年火災中全員喪生）</div>
         <div class="report-section"><b>衝突紀錄：</b><br>1月12日，受測者遭到院內其餘五名兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致雙手指關節✕✕。</div>
         <div class="report-section"><b>語言霸凌觀測：</b><br>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙綠眸注視著霸凌者，似是在觀察某種即將腐爛的標本。</div>
         <div class="report-section"><b>冷藏室事件：</b><br>為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣，他從未試圖求救。</div>
-        <p style="font-style:italic; color:#955; border-top:1px dashed #600; padding-top:10px;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
-        <button onclick="location.reload()" style="width:100%; background:#f00; color:#000; border:none; padding:15px; margin-top:20px; font-weight:bold;">REBOOT</button>
+        <p style="font-style:italic; color:#a44; border-top:1px dashed #600; padding-top:15px;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
+        <button onclick="location.reload()" style="width:100%; background:#f00; color:#000; border:none; padding:15px; margin-top:20px; font-weight:bold; cursor:pointer;">REBOOT SYSTEM</button>
     </div>
 </div>
 
@@ -103,6 +116,7 @@
     const answers = { 1: "1", 2: "4", 3: "12" };
     const stageTitles = { 1: "STAGE 01: 生還者", 2: "STAGE 02: 耐受測試", 3: "STAGE 03: 捏造血緣" };
     
+    // 文字精確校對
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室上鎖的保險箱嗎？";
     
     const crashWords = ["DEAD", "VOID", "✕✕✕", "RUN", "HELP", "FATAL_ERR", "REBOOT"];
@@ -145,7 +159,9 @@
             if (inputStr.length === 0) display.innerText = "--";
             else if (inputStr.length === 1) display.innerText = inputStr + "-";
             else display.innerText = inputStr;
-        } else { display.innerText = inputStr === "" ? "-" : inputStr; }
+        } else { 
+            display.innerText = inputStr === "" ? "-" : inputStr; 
+        }
     }
 
     function press(n) { 
@@ -157,14 +173,16 @@
     
     function submit() {
         if (inputStr === answers[currentStage]) {
-            if (currentStage < 3) {
-                currentStage++; inputStr = "";
-                document.getElementById('gate-title').innerText = stageTitles[currentStage];
-                updateDisplay();
-            } else {
-                document.getElementById('main-terminal').style.display = 'none';
-                document.getElementById('secret-overlay').style.display = 'flex';
-            }
+            showTransition(() => {
+                if (currentStage < 3) {
+                    currentStage++; inputStr = "";
+                    document.getElementById('gate-title').innerText = stageTitles[currentStage];
+                    updateDisplay();
+                } else {
+                    document.getElementById('main-terminal').style.display = 'none';
+                    document.getElementById('secret-overlay').style.display = 'flex';
+                }
+            });
         } else {
             errorCount++;
             if (errorCount >= 3) { triggerFlood(); }
@@ -172,8 +190,16 @@
         }
     }
 
+    function showTransition(callback) {
+        const loader = document.getElementById('loading-screen');
+        const fill = document.getElementById('load-fill');
+        loader.style.display = 'flex';
+        fill.style.width = '0%';
+        setTimeout(() => { fill.style.width = '100%'; }, 50);
+        setTimeout(() => { loader.style.display = 'none'; callback(); }, 1200);
+    }
+
     function triggerFlood() {
-        document.body.style.overflow = "auto";
         document.getElementById('main-terminal').style.display = 'none';
         document.getElementById('intro-screen').style.display = 'none';
         const screen = document.getElementById('flood-screen');
