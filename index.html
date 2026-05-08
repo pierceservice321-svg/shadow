@@ -16,26 +16,25 @@
             min-height: 100vh; overflow: hidden; 
         }
 
-        /* 濾鏡效果 */
+        /* CRT 掃描線濾鏡 */
         body::before {
             content: " "; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
+        /* 前傳區塊 */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; 
             flex-direction: column; justify-content: center; align-items: center; 
             z-index: 999; background: #000; padding: 20px;
         }
-
         #intro-text { 
             max-width: 600px; width: 95%; color: #c33; font-size: 1.05rem; line-height: 2.2; 
             text-shadow: 0 0 8px rgba(255,0,0,0.4); min-height: 320px; text-align: left;
             border-left: 2px solid #500; padding-left: 25px;
         }
 
-        /* YES NO 按鈕容器 */
         #intro-btn-container { 
             display: flex; gap: 30px; margin-top: 40px; 
             opacity: 0; visibility: hidden; transition: opacity 1.5s ease-in; 
@@ -53,32 +52,26 @@
             width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; 
             border: 1px solid #800; background: rgba(10, 0, 0, 0.95);
         }
+        #glitch-code { 
+            font-family: monospace; font-size: 0.75rem; color: #500; 
+            margin-top: 5px; height: 1.2rem; overflow: hidden; letter-spacing: 1px;
+        }
         #display { 
             background: rgba(20, 0, 0, 0.6); border: 1px solid #500; color: #f00; height: 75px; line-height: 75px; 
-            text-align: center; font-size: 2.2rem; letter-spacing: 12px; margin-bottom: 30px;
+            text-align: center; font-size: 2.2rem; letter-spacing: 12px; margin: 20px 0;
             font-family: 'Special Elite', cursive; text-shadow: 0 0 15px #f00;
         }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
 
-        /* 滿屏快跑效果 */
+        /* NO 結局：緊張打字機 */
         #death-screen {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 100000; overflow: hidden; flex-wrap: wrap; align-content: flex-start;
+            background: #000; z-index: 100000; overflow-y: auto; padding: 10px;
         }
-        .run-text-flood { 
-            font-size: 2rem; color: #f00; font-weight: bold; font-family: monospace;
-            margin: 2px 5px; animation: glitch-flood 0.1s infinite alternate;
-        }
-        @keyframes glitch-flood { 
-            0% { opacity: 1; transform: scale(1.1); } 
-            100% { opacity: 0.2; transform: scale(0.8) skew(15deg); text-shadow: 4px 0 #fff; } 
-        }
-        @keyframes screen-shake {
-            0% { transform: translate(0,0); } 20% { transform: translate(8px, 8px); } 
-            40% { transform: translate(-8px, -8px); } 100% { transform: translate(0,0); }
-        }
+        #flood-content { color: #f00; font-weight: bold; font-family: monospace; font-size: 1.8rem; line-height: 1.2; word-break: break-all; text-shadow: 0 0 5px #f00; }
         .shake-active { animation: screen-shake 0.3s infinite; }
+        @keyframes screen-shake { 0% { transform: translate(0,0); } 20% { transform: translate(8px, 8px); } 40% { transform: translate(-8px, -8px); } 100% { transform: translate(0,0); } }
 
         /* 報告書與結局 */
         #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
@@ -94,13 +87,14 @@
     <div id="intro-text"></div>
     <div id="intro-btn-container">
         <button class="btn" onclick="startGame()">YES</button>
-        <button class="btn btn-no" onclick="triggerFloodRun()">NO</button>
+        <button class="btn btn-no" onclick="triggerFloodTypewriter()">NO</button>
     </div>
 </div>
 
 <div class="terminal-container" id="main-terminal">
-    <div style="text-align:center; margin-bottom:20px;">
-        <p id="current-gate" style="color:#f00; font-weight:bold; letter-spacing:2px;">[ 驗證程序一：身份殘留 ]</p>
+    <div style="text-align:center;">
+        <p id="current-gate" style="color:#f00; font-weight:bold; letter-spacing:2px; margin-bottom:0;">[ 驗證程序一：身份殘留 ]</p>
+        <div id="glitch-code">SYSTEM_SCANNING...</div>
     </div>
     <div id="display">-</div>
     <div class="keypad">
@@ -116,83 +110,106 @@
 <div id="secret-overlay">
     <div class="evidence-folder" id="folder-box">
         <h2 style="font-size:1.15rem; color:#f00; border-bottom:1px solid #600; padding-bottom:15px; margin-bottom:20px;">【聖瑪利亞孤兒院St. Maria's Orphanage - 特殊個案追蹤報告】</h2>
-        <p><strong>受測者：</strong>Luca Veil<br>來自Veil家族的獨生子。（原生家族已於 2004 年火災中全員喪生）</p>
-        <p><strong>衝突紀錄：</strong><br>1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。</p>
-        <p><strong>語言霸慶觀測：</strong><br>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
-        <p><strong>冷藏室事件：</strong><br>為了測試其耐受極限，他在 4 月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
-        <p style="color:#933; font-style:italic; border-left:3px solid #500; padding-left:15px; margin-top:25px;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
-        <div style="text-align:right; min-height:100px;">
-            <div id="stamp" class="bottom-stamp">TOP SECRET</div>
-        </div>
+        <p><strong>受測者：</strong>Luca Veil<br>來自Veil家族的獨生子。</p>
+        <p><strong>衝突紀錄：</strong><br>1月12日，受測者護住一枚刻有「V」字樣的金屬扣，導致受傷。即便面對威脅，受測者全程未發出求饒。</p>
+        <p><strong>語言霸凌觀測：</strong><br>受測者表現出超乎常人的情感隔離能力，彷彿在觀察即將腐爛的標本。</p>
+        <p><strong>冷藏室事件：</strong><br>受測者被關入食品冷藏室整整四小時，仍死死護住那枚金屬扣。看見光線時，他從未試圖求救。</p>
+        <p style="color:#933; font-style:italic; border-left:3px solid #500; padding-left:15px; margin-top:25px;">這是一場關於意志與服從的篩選測試。</p>
+        <div style="text-align:right; min-height:100px;"><div id="stamp" class="bottom-stamp">TOP SECRET</div></div>
         <button id="purge-btn" onclick="triggerSuccessEnd()" style="opacity:0; width:100%; background:none; color:#f00; border:1px solid #f00; padding:18px; margin-top:20px; cursor:pointer; letter-spacing:3px; transition: 1s;">抹除存取紀錄</button>
     </div>
 </div>
 
-<div id="success-ending">
-    <div style="color:#f00; font-size:1.6rem; letter-spacing:5px; text-shadow:0 0 10px #f00;">你做得很好，現在快跑吧。</div>
-</div>
-
-<div id="death-screen"></div>
+<div id="success-ending"><div style="color:#f00; font-size:1.6rem; letter-spacing:5px; text-shadow:0 0 10px #f00;">你做得很好，現在快跑吧。</div></div>
+<div id="death-screen"><div id="flood-content"></div></div>
 
 <script>
     let currentMod = 1; let inputStr = ""; 
     const answers = { 1: "1", 2: "4", 3: "12" };
     
-    // 確定的前傳文字內容
+    // 確定的標題清單
+    const gateTitles = {
+        1: "[ 驗證程序一：身份殘留 ]",
+        2: "[ 驗證程序二：捏造血緣 ]",
+        3: "[ 驗證程序三：耐受測試 ]"
+    };
+
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料都顯示無人生還，但那活下來的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的姓氏。加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
 
-    function typeWriter(text, i, targetId) {
+    function typeWriter(text, i, targetId, callback) {
         if (i < text.length) {
             let char = text.charAt(i);
             document.getElementById(targetId).innerHTML += (char === '\n' ? '<br>' : char);
             let delay = (char === '，' || char === '。' || char === '\n') ? 450 : 60;
-            setTimeout(() => typeWriter(text, i + 1, targetId), delay);
-        } else {
-            // 文字打完，顯示按鈕
-            const btnContainer = document.getElementById('intro-btn-container');
-            btnContainer.style.visibility = "visible";
-            btnContainer.style.opacity = "1";
-        }
+            setTimeout(() => typeWriter(text, i + 1, targetId, callback), delay);
+        } else if (callback) callback();
     }
 
-    window.onload = () => { typeWriter(introTextRaw, 0, 'intro-text'); };
+    window.onload = () => { 
+        typeWriter(introTextRaw, 0, 'intro-text', () => {
+            const btnContainer = document.getElementById('intro-btn-container');
+            btnContainer.style.visibility = "visible"; btnContainer.style.opacity = "1";
+        }); 
+    };
 
     function startGame() {
         document.getElementById('intro-screen').style.display = 'none';
         document.getElementById('main-terminal').style.display = 'flex';
+        setInterval(updateGlitchCode, 50);
     }
 
-    function triggerFloodRun() {
-        document.getElementById('intro-text').innerHTML = "<span style='color:red; font-weight:bold;'>黑暗中，有一雙眼睛正盯著你的後腦勺...</span>";
+    function updateGlitchCode() {
+        const chars = "0123456789ABCDEF!@#$%^&*";
+        let code = "";
+        for (let i = 0; i < 20; i++) {
+            if (i % 5 === 0) code += " 0x";
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById('glitch-code').innerText = code;
+    }
+
+    function triggerFloodTypewriter() {
+        document.getElementById('intro-text').innerHTML = "<span style='color:red; font-weight:bold; text-shadow:0 0 10px #f00;'>黑暗中，有一雙眼睛正盯著你的後腦勺...</span>";
         document.getElementById('intro-btn-container').style.display = "none";
-        
         setTimeout(() => {
-            const deathScreen = document.getElementById('death-screen');
-            deathScreen.style.display = "flex";
-            let words = "";
-            for (let i = 0; i < 1200; i++) { words += `<span class="run-text-flood">快跑</span>`; }
-            deathScreen.innerHTML = words;
+            document.getElementById('death-screen').style.display = "flex";
             document.body.classList.add('shake-active');
-            
-            setTimeout(() => {
-                document.body.innerHTML = ""; 
-                setTimeout(() => location.reload(), 2000);
-            }, 3000);
+            startTenseTyping();
         }, 1500);
     }
 
+    let floodCount = 0;
+    function startTenseTyping() {
+        if (floodCount >= 850) {
+            setTimeout(() => { 
+                document.body.innerHTML = ""; 
+                setTimeout(() => location.reload(), 2000); 
+            }, 1000);
+            return;
+        }
+        document.getElementById('flood-content').innerHTML += `<span>快跑</span> `;
+        document.getElementById('death-screen').scrollTop = document.getElementById('death-screen').scrollHeight;
+        floodCount++;
+        // 模擬緊張不穩定的節奏
+        setTimeout(startTenseTyping, Math.random() * 70 + 5);
+    }
+
+    function press(n) {
+        let max = (currentMod === 3) ? 2 : 1;
+        if (inputStr.length < max) { inputStr += n; document.getElementById('display').innerText = inputStr; }
+    }
+    function clearD() { inputStr = ""; document.getElementById('display').innerText = "-"; }
+    
     function submit() {
         if (inputStr === answers[currentMod]) {
             if (currentMod < 3) {
                 currentMod++;
-                document.getElementById('current-gate').innerText = `[ 驗證程序：STEP ${currentMod} ]`;
-                inputStr = ""; document.getElementById('display').innerText = "-";
-            } else {
-                showReport();
-            }
+                document.getElementById('current-gate').innerText = gateTitles[currentMod];
+                clearD();
+            } else showReport();
         } else {
-            inputStr = ""; document.getElementById('display').innerText = "ERROR";
-            setTimeout(() => { document.getElementById('display').innerText = "-"; }, 500);
+            document.getElementById('display').innerText = "ERROR";
+            setTimeout(clearD, 500);
         }
     }
 
@@ -200,11 +217,10 @@
         document.getElementById('main-terminal').style.display = 'none';
         document.getElementById('secret-overlay').style.display = 'flex';
         setTimeout(() => {
-            const stamp = document.getElementById('stamp');
-            stamp.classList.add('stamp-active');
-            setTimeout(() => {
+            document.getElementById('stamp').classList.add('stamp-active');
+            setTimeout(() => { 
                 document.getElementById('folder-box').classList.add('shake-active');
-                setTimeout(() => { document.getElementById('purge-btn').style.opacity = "1"; }, 800);
+                setTimeout(() => document.getElementById('purge-btn').style.opacity = "1", 800);
             }, 350);
         }, 1000);
     }
@@ -212,16 +228,8 @@
     function triggerSuccessEnd() {
         document.getElementById('secret-overlay').style.display = 'none';
         document.getElementById('success-ending').style.display = 'flex';
-        setTimeout(() => { location.reload(); }, 4500);
+        setTimeout(() => location.reload(), 4500);
     }
-
-    function press(n) {
-        let max = (currentMod === 3) ? 2 : 1;
-        if (inputStr.length < max) {
-            inputStr += n; document.getElementById('display').innerText = inputStr;
-        }
-    }
-    function clearD() { inputStr = ""; document.getElementById('display').innerText = "-"; }
 </script>
 </body>
 </html>
