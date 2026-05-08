@@ -136,7 +136,7 @@
 
 <div id="ending-screen">
     <div class="fade-in-text">你做得很好，但快躲起來吧。</div>
-    <p style="color: #400; font-size: 0.7rem; margin-top: 60px;">紀錄已完全銷毀</p>
+    <p style="color: #400; font-size: 0.7rem; margin-top: 50px;">紀錄已完全銷毀</p>
 </div>
 
 <script>
@@ -152,7 +152,8 @@
 
     function triggerEnd() {
         document.getElementById('secret-overlay').style.display = 'none';
-        document.getElementById('ending-screen').style.display = 'flex';
+        const endScreen = document.getElementById('ending-screen');
+        endScreen.style.display = 'flex';
     }
 
     function triggerDeath(reason) {
@@ -167,7 +168,7 @@
             text.innerHTML = "<span style='color:#f00; font-size:1.2rem; font-style:italic;'>你感覺到暗處有人在看著你...</span>";
             setTimeout(() => {
                 screen.classList.add('death-active');
-                text.innerHTML = "<h1 style='color:#fff; font-size:5rem; letter-spacing:15px; margin:0;'>DEAD</h1><p style='color:#f00; font-weight:bold;'>他不該回頭的。</p>";
+                text.innerHTML = "<h1 style='color:#fff; font-size:5rem; letter-spacing:15px; margin:0;'>DEAD</h1><p style='color:#f00; font-weight:bold;'>你不該回頭的。</p>";
             }, 1500);
         } else {
             screen.classList.add('death-active');
