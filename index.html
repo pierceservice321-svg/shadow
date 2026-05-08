@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SECURE TERMINAL | Luca</title>
+    <title>SECURE TERMINAL | St. Maria's Orphanage</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
@@ -38,29 +38,22 @@
             100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); opacity: 0.8; }
         }
 
-        /* 死亡結局：劇烈震動與閃爍 */
+        /* 死亡結局視覺效果 */
         @keyframes dead-shake {
             0% { transform: translate(2px, 1px) rotate(0deg); }
             10% { transform: translate(-2px, -3px) rotate(-2deg); }
-            30% { transform: translate(4px, 4px) rotate(3deg); }
-            50% { transform: translate(-4px, 2px) rotate(-1deg); }
-            70% { transform: translate(3px, 1px) rotate(2deg); }
-            90% { transform: translate(-2px, -1px) rotate(0deg); }
+            30% { transform: translate(5px, 5px) rotate(4deg); }
+            50% { transform: translate(-5px, 2px) rotate(-2deg); }
             100% { transform: translate(2px, 1px) rotate(0deg); }
         }
         @keyframes glitch-red {
-            0% { background-color: #500; }
-            20% { background-color: #000; }
-            40% { background-color: #800; }
-            60% { background-color: #000; }
-            80% { background-color: #f00; }
-            100% { background-color: #000; }
+            0% { background-color: #400; }
+            50% { background-color: #000; }
+            100% { background-color: #600; }
         }
-        .death-active { 
-            animation: dead-shake 0.15s infinite, glitch-red 0.3s infinite !important; 
-        }
+        .death-active { animation: dead-shake 0.1s infinite, glitch-red 0.2s infinite !important; }
 
-        /* 解謎畫面 */
+        /* 解謎終端 */
         .terminal-container { 
             width: 95%; max-width: 450px; background: #050000; border: 2px solid #800; 
             padding: 25px; display: none; flex-direction: column; 
@@ -72,24 +65,34 @@
         }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .key { background: #0a0000; border: 1px solid #600; color: #a00; padding: 25px 0; font-size: 1.8rem; cursor: pointer; }
-        #status-msg { font-size: 1rem; color: #700; text-align: center; margin-top: 20px; min-height: 1.5em; }
+        .key:active { background: #a00; color: #000; }
+        #status-msg { font-size: 0.9rem; color: #700; text-align: center; margin-top: 20px; min-height: 1.5em; }
 
-        /* 真相報告略 (與前版一致) */
-        #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
-        .evidence-folder { width: 100%; max-width: 500px; background: #120000; color: #c00; padding: 25px; border: 1px solid #600; position: relative; }
+        /* 真相報告檔案樣式 */
+        #secret-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 10000; justify-content: center; align-items: center; padding: 15px; 
+        }
+        .evidence-folder { 
+            width: 100%; max-width: 500px; background: #120000; color: #c00; 
+            padding: 25px; max-height: 90vh; overflow-y: auto; border: 1px solid #600;
+            position: relative; box-shadow: 0 0 50px rgba(255, 0, 0, 0.1);
+        }
+        .stamp { border: 3px solid #f00; color: #f00; padding: 4px 12px; font-weight: bold; transform: rotate(15deg); position: absolute; top: 20px; right: 20px; font-size: 0.8rem; letter-spacing: 2px; }
+        .report-content p { line-height: 1.8; margin: 15px 0; font-size: 0.95rem; text-align: justify; }
     </style>
 </head>
 <body>
 
 <div id="intro-screen">
     <div id="intro-text">
-        1992 年的雪夜，一場大火抹去了 Veil 的所有痕跡。<br><br>
+        2004 年的雪夜，一場大火抹去了 Veil 的所有痕跡。<br><br>
         傳聞在那場慘劇後，原本的家族成員中，<br>
         雖然資料顯示無人生還，<br>
         但那個活下來的孩子，學會了如何服從規則。<br>
         他在深處的冰庫裡被反鎖了整整四個小時。<br><br>
         直到那年的十二號，他獲得了新的姓氏：Luciano。<br><br>
-        <span id="warning-label" style="color: #f00; font-weight: bold;">你確定要進入地下室嗎？</span>
+        <span style="color: #f00; font-weight: bold;">你確定要進入地下室嗎？</span>
     </div>
     <div class="choice-container" id="choices">
         <button class="btn yes-btn" onclick="startGame()">YES</button>
@@ -98,7 +101,7 @@
 </div>
 
 <div class="terminal-container" id="main-terminal">
-    <div style="font-size:0.8rem; color:#800; text-align:center; margin-bottom:10px; letter-spacing:3px;">安全終端 // 聖瑪利亞孤兒院</div>
+    <div style="font-size:0.7rem; color:#800; text-align:center; margin-bottom:10px; letter-spacing:3px;">INTERNAL ACCESS // ST. MARIA'S ORPHANAGE</div>
     <div style="text-align:center; margin-bottom:20px;">
         <p id="current-gate" style="color:#f00; font-style:italic; font-size:0.9rem;">驗證程序一：關於生還者</p>
     </div>
@@ -116,17 +119,22 @@
 
 <div id="secret-overlay">
     <div class="evidence-folder">
+        <div class="stamp">TOP SECRET</div>
         <div style="border-bottom: 2px solid #800; padding-bottom: 15px; margin-bottom: 20px;">
-            <h2 style="color: #c00; font-size: 1.2rem; margin: 0;">【聖瑪利亞孤兒院 - 特殊個案追蹤報告】</h2>
+            <h2 style="color: #c00; font-size: 1.15rem; margin: 0;">【聖瑪利亞孤兒院 - 特殊個案追蹤報告】</h2>
         </div>
-        <div style="font-size: 0.95rem; line-height: 1.8;">
-            <p><strong>受測者：</strong>Luca / <strong>姓氏：</strong>不詳。</p>
+        <div class="report-content">
+            <p><strong>受測者：</strong>Luca</p>
+            <p><strong>姓氏：</strong>Veil（原生家族已於 2004 年火災中全員喪生）</p>
+            <hr style="border:0; border-top:1px dashed #500; margin: 20px 0;">
             <p><strong>衝突紀錄：</strong>1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。</p>
             <p><strong>語言霸凌觀測：</strong>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
-            <p><strong>冷藏室事件：</strong>為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
-            <p style="color: #ff4d4d; font-weight: bold; font-style: italic; margin-top: 20px;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
+            <p><strong>冷藏室事件：</strong>為了測試其耐受極限，他在 2006 年的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
+            <div style="color: #ff4d4d; font-weight: bold; background: rgba(255, 0, 0, 0.05); padding: 15px; border-left: 4px solid #800; margin-top: 25px; font-style: italic;">
+                這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。
+            </div>
         </div>
-        <button onclick="location.reload()" style="width:100%; background:#600; color:#000; border:none; padding:18px; margin-top:30px; font-weight:bold; cursor:pointer;">抹除資料並離開</button>
+        <button onclick="location.reload()" style="width:100%; background:#600; color:#000; border:none; padding:18px; margin-top:30px; font-weight:bold; cursor:pointer; letter-spacing:2px;">抹除存取紀錄</button>
     </div>
 </div>
 
@@ -141,24 +149,20 @@
         updateHint();
     }
 
-    // 強化版死亡結局
     function triggerDeath(reason) {
         const screen = document.getElementById('intro-screen');
         const text = document.getElementById('intro-text');
         const main = document.getElementById('main-terminal');
-        
         main.style.display = 'none';
         screen.style.display = 'flex';
         screen.classList.add('death-active');
-        
         document.getElementById('choices').style.display = 'none';
         
         let msg = (reason === 'exit') ? "你不該猶豫的。" : "你被發現了。";
         text.innerHTML = `
-            <h1 style="color: #fff; font-size: 5rem; font-family: serif; letter-spacing: 10px; margin: 0; text-shadow: 0 0 20px #f00;">DEAD</h1>
+            <h1 style="color: #fff; font-size: 5rem; font-family: serif; letter-spacing: 15px; margin: 0; text-shadow: 0 0 20px #f00;">DEAD</h1>
             <p style="color: #f00; font-size: 1.2rem; font-weight: bold; letter-spacing: 3px;">${msg}</p>
         `;
-        
         setTimeout(() => { location.reload(); }, 3500);
     }
 
@@ -180,7 +184,7 @@
     function submit() {
         if (inputStr === "") return;
         const status = document.getElementById('status-msg');
-        status.innerText = "正在驗證身分..."; status.style.color = "#f00";
+        status.innerText = "驗證中..."; status.style.color = "#f00";
         
         setTimeout(() => {
             if (inputStr === answers[currentMod]) {
@@ -198,7 +202,7 @@
                 if (failCount >= 5) {
                     triggerDeath('hack');
                 } else {
-                    status.innerText = `[ 拒絕存取 ] 警告：剩餘 ${5 - failCount} 次嘗試`;
+                    status.innerText = `[ 拒絕存取 ] 剩餘次數: ${5 - failCount}`;
                     updateHint();
                 }
             }
