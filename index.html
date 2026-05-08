@@ -16,14 +16,14 @@
             min-height: 100vh; overflow: hidden; 
         }
 
-        /* 掃描線特效 */
+        /* 掃描線濾鏡 */
         body::before {
             content: " "; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.03));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        /* 初始前傳畫面 */
+        /* 前傳畫面 */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; 
             flex-direction: column; justify-content: center; align-items: center; 
@@ -40,7 +40,7 @@
         .btn:hover { background: #f00; color: #000; box-shadow: 0 0 20px #f00; }
         .btn-no { border-color: #444; color: #666; }
 
-        /* 終端機介面 */
+        /* 終端機面板 */
         .terminal-container { width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; border: 1px solid #800; background: rgba(10, 0, 0, 0.95); position: relative; }
         #glitch-code { font-family: monospace; font-size: 0.75rem; color: #500; margin-top: 5px; height: 1.2rem; overflow: hidden; letter-spacing: 1px; }
         #display { background: rgba(20, 0, 0, 0.6); border: 1px solid #500; color: #f00; height: 75px; line-height: 75px; text-align: center; font-size: 2.2rem; letter-spacing: 12px; margin: 20px 0; font-family: 'Special Elite', cursive; text-shadow: 0 0 15px #f00; }
@@ -48,31 +48,30 @@
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
 
-        /* 解密動畫層 (Inter-level Decryption) */
+        /* 解密動畫層 */
         #decrypt-overlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(10, 0, 0, 0.98); z-index: 200; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center;
         }
-        .decrypt-status { color: #f00; font-family: monospace; font-size: 1.1rem; letter-spacing: 3px; margin-bottom: 15px; animation: blink 0.5s infinite alternate; }
-        .progress-bar { width: 80%; height: 4px; background: #300; border-radius: 2px; overflow: hidden; }
-        .progress-fill { width: 0%; height: 100%; background: #f00; box-shadow: 0 0 10px #f00; transition: width 0.1s linear; }
-        @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
+        .decrypt-status { color: #f00; font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; animation: blink 0.5s infinite alternate; }
+        .progress-bar { width: 80%; height: 4px; background: #200; border-radius: 2px; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: #f00; box-shadow: 0 0 10px #f00; }
 
         /* 追蹤報告 */
         #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
         .evidence-folder { 
-            position: relative; width: 95%; max-width: 620px; padding: 40px 45px 100px 45px; color: #d22; 
+            position: relative; width: 95%; max-width: 620px; padding: 40px 45px 120px 45px; color: #d22; 
             max-height: 90vh; overflow-y: auto; border: 1px solid #600; line-height: 1.8; background: #0a0000;
             box-shadow: inset 0 0 50px #000;
         }
         
-        /* TOP SECRET 章移至最下方 */
+        /* TOP SECRET：縮小、右下角、不再阻礙閱讀 */
         .stamp {
-            position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%) rotate(-3deg);
+            position: absolute; bottom: 30px; right: 30px;
             border: 2px solid #f00; color: #f00; font-family: 'Special Elite', cursive; 
-            font-size: 1rem; padding: 4px 20px; opacity: 0.6; font-weight: bold; 
-            text-shadow: 0 0 8px #f00; pointer-events: none;
+            font-size: 0.9rem; padding: 4px 15px; opacity: 0.5; font-weight: bold; 
+            text-shadow: 0 0 5px #f00; transform: rotate(-12deg); pointer-events: none;
+            background: rgba(10, 0, 0, 0.5);
         }
 
         .report-section { margin-bottom: 25px; padding-left: 15px; border-left: 2px solid #500; }
@@ -95,7 +94,7 @@
 
 <div class="terminal-container" id="main-terminal">
     <div id="decrypt-overlay">
-        <div class="decrypt-status" id="decrypt-msg">ANALYZING SECURITY LAYER...</div>
+        <div class="decrypt-status" id="decrypt-msg">INITIALIZING BRUTE FORCE...</div>
         <div class="progress-bar"><div class="progress-fill" id="p-fill"></div></div>
         <div id="decrypt-hex" style="font-family:monospace; font-size:0.6rem; color:#400; margin-top:10px;"></div>
     </div>
@@ -153,15 +152,16 @@
     let currentMod = 1; let inputStr = ""; 
     const answers = { 1: "1", 2: "4", 3: "12" };
     const gateTitles = { 1: "[ 驗證程序一：身份殘留 ]", 2: "[ 驗證程序二：耐受測試 ]", 3: "[ 驗證程序三：捏造血緣 ]" };
+    const decryptMsgs = { 1: "SECURITY LAYER 1: BREACHING...", 2: "DEEP DATA EXTRACTION IN PROGRESS...", 3: "CORE SYSTEM TAKEOVER: CRACKING..." };
+    const decryptTimes = { 1: 2000, 2: 5000, 3: 8500 }; // 遞增的時間 (毫秒)
 
-    // --- 前傳文字更新 ---
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
 
     function typeWriter(text, i, targetId, callback) {
         if (i < text.length) {
             let char = text.charAt(i);
             document.getElementById(targetId).innerHTML += (char === '\n' ? '<br>' : char);
-            setTimeout(() => typeWriter(text, i + 1, targetId, callback), (char === '，' || char === '。' || char === '\n' ? 500 : 50));
+            setTimeout(() => typeWriter(text, i + 1, targetId, callback), (char === '，' || char === '。' || char === '\n' ? 550 : 50));
         } else if (callback) callback();
     }
 
@@ -194,7 +194,6 @@
         document.getElementById('display').innerText = (currentMod === 3) ? "--" : "-"; 
     }
     
-    // --- 提交與解密動畫邏輯 ---
     function submit() {
         if (inputStr === answers[currentMod]) {
             showDecryptionSequence(() => {
@@ -219,27 +218,27 @@
         const hex = document.getElementById('decrypt-hex');
         const msg = document.getElementById('decrypt-msg');
         
+        const duration = decryptTimes[currentMod];
         overlay.style.display = 'flex';
-        msg.innerText = currentMod === 3 ? "BYPASSING FINAL ENCRYPTION..." : "DECRYPTING SECURITY LAYER...";
+        msg.innerText = decryptMsgs[currentMod];
         
-        let progress = 0;
-        const duration = 2500; // 2.5秒的解密時間
-        const start = Date.now();
-
-        const step = () => {
-            const elapsed = Date.now() - start;
-            progress = Math.min((elapsed / duration) * 100, 100);
+        let start = null;
+        const step = (timestamp) => {
+            if (!start) start = timestamp;
+            const elapsed = timestamp - start;
+            const progress = Math.min((elapsed / duration) * 100, 100);
+            
             fill.style.width = progress + "%";
-            hex.innerText = "HEX_DUMP: " + Math.random().toString(16).substring(2, 10).toUpperCase();
+            hex.innerText = "OVERRIDE_CODE: 0x" + Math.random().toString(16).substring(2, 10).toUpperCase();
 
-            if (progress < 100) {
+            if (elapsed < duration) {
                 requestAnimationFrame(step);
             } else {
                 setTimeout(() => {
                     overlay.style.display = 'none';
                     fill.style.width = "0%";
                     callback();
-                }, 300);
+                }, 400);
             }
         };
         requestAnimationFrame(step);
