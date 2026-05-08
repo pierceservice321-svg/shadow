@@ -19,7 +19,7 @@
 
         body { background: #000; color: #900; font-family: "Noto Serif TC", serif; margin: 0; padding: 0; overflow: hidden; width: 100vw; height: 100vh; }
 
-        /* 背景亂碼 */
+        /* 全螢幕背景亂碼 */
         #bg-glitch { position: fixed; inset: 0; font-family: 'Courier New', monospace; font-size: 12px; color: rgba(255, 0, 0, 0.18); pointer-events: none; white-space: pre-wrap; z-index: 0; overflow: hidden; line-height: 1.2; }
 
         /* 前傳介面 */
@@ -36,8 +36,16 @@
 
         /* 終端機介面 */
         .terminal-container { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 92%; max-width: 380px; padding: 25px; display: none; flex-direction: column; border: 1px solid #800; background: rgba(10, 0, 0, 0.98); z-index: 10; box-shadow: 0 0 20px #500; }
-        #gate-title { font-family: 'Special Elite'; color: #f00; text-align: center; font-size: 1rem; margin-bottom: 15px; letter-spacing: 2px; }
-        #display { background: rgba(30, 0, 0, 0.9); border: 1px solid #700; color: #f00; height: 80px; margin-bottom: 25px; font-family: 'Special Elite'; font-size: 2.6rem; display: flex; justify-content: center; align-items: center; letter-spacing: 12px; padding-left: 12px; text-shadow: 0 0 10px #f00; }
+        #gate-title { font-family: 'Special Elite'; color: #f00; text-align: center; font-size: 1rem; margin-bottom: 5px; letter-spacing: 2px; }
+        
+        /* 【補完】STAGE 標題下方的局部跳動亂碼 */
+        #stage-glitch-line { 
+            font-family: monospace; font-size: 0.8rem; color: #600; text-align: center; 
+            height: 1.2em; margin-bottom: 15px; overflow: hidden; 
+            background: rgba(30, 0, 0, 0.3); letter-spacing: 2px; 
+        }
+
+        #display { background: rgba(30, 0, 0, 0.9); border: 1px solid #700; color: #f00; height: 80px; margin-bottom: 25px; font-family: 'Special Elite'; font-size: 2.6rem; display: flex; justify-content: center; align-items: center; letter-spacing: 12px; padding-left: 12px; text-shadow: 0 0 10px #f00; box-shadow: inset 0 0 20px #000; }
         
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .key { background: rgba(50, 0, 0, 0.5); border: 1px solid #900; color: #c33; padding: 20px 0; font-size: 1.5rem; cursor: pointer; font-family: 'Special Elite'; }
@@ -84,6 +92,7 @@
 
 <div class="terminal-container" id="main-terminal">
     <div id="gate-title">STAGE 01: 生還者</div>
+    <div id="stage-glitch-line"></div>
     <div id="display">-</div>
     <div class="keypad">
         <button class="key" onclick="press('1')">1</button><button class="key" onclick="press('2')">2</button><button class="key" onclick="press('3')">3</button>
@@ -124,13 +133,28 @@
     const stageTitles = { 1: "STAGE 01: 生還者", 2: "STAGE 02: 耐受測試", 3: "STAGE 03: 捏造血緣" };
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼裡的孩子，學會了如何服從規則。\n\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室上鎖的保險箱嗎？";
 
+    // 通用亂碼生成器
+    function getGlitchChars(len) {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#!@&*%✕ø†";
+        let str = ""; for(let i=0; i < len; i++) str += chars[Math.floor(Math.random() * chars.length)];
+        return str;
+    }
+
+    // 啟動全螢幕背景亂碼
     function startBgGlitch() {
         const glitchEl = document.getElementById('bg-glitch');
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#!@&*%✕ø†";
         setInterval(() => {
-            let str = ""; for(let i=0; i < 1500; i++) str += chars[Math.floor(Math.random() * chars.length)];
-            glitchEl.innerText = str;
+            glitchEl.innerText = getGlitchChars(1500);
         }, 50);
+    }
+
+    // 啟動 STAGE 下方的局部亂碼
+    function startStageGlitch() {
+        const stageGlitchEl = document.getElementById('stage-glitch-line');
+        setInterval(() => {
+            // 生成較短的亂碼行
+            stageGlitchEl.innerText = getGlitchChars(25);
+        }, 40); // 稍快一點的跳動頻率
     }
 
     function typeWriter(text, i, targetId, callback) {
@@ -143,6 +167,7 @@
 
     window.onload = () => { 
         startBgGlitch();
+        startStageGlitch(); // 啟動 STAGE 亂碼
         typeWriter(introTextRaw, 0, 'intro-text', () => { document.getElementById('intro-btn-container').style.opacity = "1"; }); 
     };
 
