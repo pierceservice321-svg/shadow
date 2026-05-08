@@ -68,10 +68,9 @@
             letter-spacing: 2px; font-size: 0.9rem;
         }
 
-        /* 最終結局畫面（黑色背景，緩慢浮現紅字） */
+        /* 最終結局畫面 */
         #ending-screen {
-            display: none; /* 預設隱藏 */
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 10001; flex-direction: column; 
             justify-content: center; align-items: center; text-align: center; color: #f00; padding: 20px;
         }
@@ -86,7 +85,7 @@
         2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。<br>
         縱然所有資料都顯示無人生還，<br>
         但那個活下來的孩子，學會了如何服從規則。<br>
-        他在2✕✕✕年✕✕月12號被迫接受了新的姓氏，加入了不屬於他的家族。<br>
+        他在2✕✕✕年✕✕月12號被迫接受了新的姓氏。加入了不屬於他的家族。<br>
         被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。<br><br>
         <span style="color: #f00; font-weight: bold;">你確定要進入地下室嗎？</span>
     </div>
@@ -100,7 +99,7 @@
     <div style="font-size:0.7rem; color:#800; text-align:center; margin-bottom:10px; letter-spacing:2px;">INTERNAL ACCESS // ST. MARIA'S ORPHANAGE</div>
     <div style="text-align:center; margin-bottom:20px;">
         <p id="current-gate" style="color:#f00; font-style:italic; font-size:0.9rem;">驗證程序一：身份殘留</p>
-        <p id="hint-text" style="color:#f00; font-size:0.85rem;">當世界歸於死寂，廢墟中仍在跳動的脈搏有幾個？</p>
+        <p id="hint-text" style="color:#400; font-size:0.75rem; letter-spacing:1px; margin-top:5px;">STATUS: ENCRYPTED_DATA_SECTOR</p>
     </div>
     <div id="display">-</div>
     <div class="keypad">
@@ -111,7 +110,7 @@
         <button class="key" onclick="press('0')">0</button>
         <button class="key" style="color:#f00; font-size:1.1rem;" onclick="submit()">EXE</button>
     </div>
-    <div id="status-msg">等待身分驗證...</div>
+    <div id="status-msg">等待授權輸入...</div>
 </div>
 
 <div id="secret-overlay">
@@ -124,7 +123,7 @@
             <p><strong>姓氏：</strong>Veil（原生家族已於 2004 年火災中全員喪生）</p>
             <hr style="border:0; border-top:1px dashed #500; margin: 20px 0;">
             <p><strong>衝突紀錄：</strong>1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。</p>
-            <p><strong>語言霸凌觀測：</strong>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
+            <p><strong>語言霸凌觀測：</strong>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸靈者，彷彿在觀察某種即將腐爛的標本。</p>
             <p><strong>冷藏室事件：</strong>為了測試其耐受極限，他在 2006 年的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
             <p style="color: #ff4d4d; font-weight: bold; font-style: italic; margin-top: 25px;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
             <div class="bottom-stamp-area">
@@ -137,20 +136,14 @@
 
 <div id="ending-screen">
     <div class="fade-in-text">你做得很好，但快躲起來吧。</div>
-    <p style="color: #400; font-size: 0.7rem; margin-top: 60px;">所有紀錄已完全銷毀</p>
+    <p style="color: #400; font-size: 0.7rem; margin-top: 60px;">紀錄已完全銷毀</p>
 </div>
 
 <script>
     let currentMod = 1; let inputStr = ""; let failCount = 0;
     const answers = { 1: "1", 2: "4", 3: "12" };
-    // 標題與妳之前的要求同步
+    // 保留驗證程序標題
     const gates = { 1: "驗證程序一：身份殘留", 2: "驗證程序二：耐受體質", 3: "驗證程序三：捏造血緣" };
-    // 修正的提示語 1 和 3
-    const hints = { 
-        1: "當世界歸於死寂，廢墟中仍在跳動的脈搏有幾個？", 
-        2: "他在那扇冰封的門後，交出了多少小時的體溫？", 
-        3: "Veil家族的火熄滅後，他在哪一天被賦予新的罪名？" 
-    };
 
     function startGame() {
         document.getElementById('intro-screen').style.display = 'none';
@@ -158,11 +151,8 @@
         updateHint();
     }
 
-    // 當報告畫面最下方的「抹除存取紀錄」按鈕被點擊時，會執行這個函數
     function triggerEnd() {
-        // 隱脫報告畫面
         document.getElementById('secret-overlay').style.display = 'none';
-        // 顯示結局畫面（小粉絲躲起來）
         const endScreen = document.getElementById('ending-screen');
         endScreen.style.display = 'flex';
     }
@@ -179,18 +169,17 @@
             text.innerHTML = "<span style='color:#f00; font-size:1.2rem; font-style:italic;'>你感覺到暗處有人在看著你...</span>";
             setTimeout(() => {
                 screen.classList.add('death-active');
-                text.innerHTML = "<h1 style='color:#fff; font-size:5rem; letter-spacing:15px; margin:0;'>DEAD</h1><p style='color:#f00; font-weight:bold;'>你不該猶豫的。</p>";
+                text.innerHTML = "<h1 style='color:#fff; font-size:5rem; letter-spacing:15px; margin:0;'>DEAD</h1><p style='color:#f00; font-weight:bold;'>你不該回頭的。</p>";
             }, 1500);
         } else {
             screen.classList.add('death-active');
-            text.innerHTML = "<h1 style='color:#fff; font-size:5rem; letter-spacing:15px; margin:0;'>DEAD</h1><p style='color:#f00; font-weight:bold;'>你被發現了。</p>";
+            text.innerHTML = "<h1 style='color:#fff; font-size:5rem; letter-spacing:15px; margin:0;'>DEAD</h1><p style='color:#f00; font-weight:bold;'>追蹤程序已啟動。</p>";
         }
         setTimeout(() => { location.reload(); }, 4500);
     }
 
     function updateHint() {
         document.getElementById('display').innerText = (currentMod === 3) ? "--" : "-";
-        document.getElementById('hint-text').innerText = hints[currentMod];
         inputStr = "";
     }
 
@@ -212,9 +201,9 @@
                 if (currentMod < 3) {
                     currentMod++;
                     document.getElementById('current-gate').innerText = gates[currentMod];
-                    status.innerText = "驗證成功。權限遞增。";
+                    status.innerText = "驗證成功。";
                     status.style.color = "#0f0";
-                    setTimeout(() => { status.style.color = "#700"; }, 500);
+                    setTimeout(() => { status.style.color = "#700"; status.innerText = "等待授權輸入..."; }, 800);
                     updateHint();
                 } else {
                     document.getElementById('main-terminal').style.display = 'none';
@@ -225,7 +214,9 @@
                 if (failCount >= 5) {
                     triggerDeath('hack');
                 } else {
-                    status.innerText = `[ 拒絕存取 ] 剩餘次數: ${5 - failCount}`;
+                    status.innerText = "拒絕存取。";
+                    status.style.color = "#f00";
+                    setTimeout(() => { status.style.color = "#700"; status.innerText = `剩餘次數: ${5 - failCount}`; }, 800);
                     updateHint();
                 }
             }
