@@ -23,21 +23,21 @@
             z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        /* 1. 前傳區塊 */
         #intro-screen {
-            position: fixed; width: 100%; height: 100%; display: flex; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; 
             flex-direction: column; justify-content: center; align-items: center; 
             z-index: 999; background: #000; padding: 20px;
         }
+
         #intro-text { 
             max-width: 600px; width: 95%; color: #c33; font-size: 1.05rem; line-height: 2.2; 
             text-shadow: 0 0 8px rgba(255,0,0,0.4); min-height: 320px; text-align: left;
             border-left: 2px solid #500; padding-left: 25px;
         }
 
-        /* --- YES NO 按鈕樣式 --- */
+        /* YES NO 按鈕容器 */
         #intro-btn-container { 
-            display: flex; gap: 30px; margin-top: 30px; 
+            display: flex; gap: 30px; margin-top: 40px; 
             opacity: 0; visibility: hidden; transition: opacity 1.5s ease-in; 
         }
         .btn { 
@@ -47,9 +47,8 @@
         }
         .btn:hover { background: #f00; color: #000; box-shadow: 0 0 20px #f00; }
         .btn-no { border-color: #444; color: #666; }
-        .btn-no:hover { border-color: #f00; color: #f00; background: rgba(255,0,0,0.1); }
 
-        /* 2. 終端機區塊 */
+        /* 終端機介面 */
         .terminal-container { 
             width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; 
             border: 1px solid #800; background: rgba(10, 0, 0, 0.95);
@@ -61,45 +60,32 @@
         }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
-        .key:active { transform: scale(0.92); background: #900; }
 
-        /* 3. 報告書與蓋章 */
-        #secret-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; padding: 15px; 
-        }
-        .evidence-folder { 
-            width: 95%; max-width: 520px; padding: 45px; color: #d22; 
-            max-height: 85vh; overflow-y: auto; border: 1px solid #400; line-height: 1.9; position: relative;
-        }
-        .bottom-stamp { 
-            border: 5px double #f00; color: #f00; padding: 10px 30px; font-weight: bold; 
-            display: inline-block; transform: rotate(-15deg) scale(10); opacity: 0;
-            font-size: 1.6rem; margin-top: 40px; font-family: sans-serif;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.1s;
-        }
-        .stamp-active { transform: rotate(-15deg) scale(0.85); opacity: 0.8; }
-
-        /* 4. 結局效果 */
-        #success-ending {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 100001; flex-direction: column; justify-content: center; align-items: center;
-        }
+        /* 滿屏快跑效果 */
         #death-screen {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 100000; overflow: hidden; flex-wrap: wrap; align-content: flex-start;
         }
         .run-text-flood { 
-            font-size: 2.2rem; color: #f00; font-weight: bold; font-family: monospace;
-            margin: 0px 4px; animation: glitch-flood 0.1s infinite alternate;
+            font-size: 2rem; color: #f00; font-weight: bold; font-family: monospace;
+            margin: 2px 5px; animation: glitch-flood 0.1s infinite alternate;
         }
         @keyframes glitch-flood { 
-            0% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.3; transform: scale(0.9) skew(10deg); } 
+            0% { opacity: 1; transform: scale(1.1); } 
+            100% { opacity: 0.2; transform: scale(0.8) skew(15deg); text-shadow: 4px 0 #fff; } 
         }
         @keyframes screen-shake {
-            0% { transform: translate(0,0); } 20% { transform: translate(7px, 7px); } 40% { transform: translate(-7px, -7px); } 100% { transform: translate(0,0); }
+            0% { transform: translate(0,0); } 20% { transform: translate(8px, 8px); } 
+            40% { transform: translate(-8px, -8px); } 100% { transform: translate(0,0); }
         }
-        .shake-active { animation: screen-shake 0.3s ease-in-out; }
+        .shake-active { animation: screen-shake 0.3s infinite; }
+
+        /* 報告書與結局 */
+        #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
+        .evidence-folder { width: 95%; max-width: 520px; padding: 45px; color: #d22; max-height: 85vh; overflow-y: auto; border: 1px solid #400; line-height: 1.9; position: relative; }
+        .bottom-stamp { border: 5px double #f00; color: #f00; padding: 10px 30px; font-weight: bold; display: inline-block; transform: rotate(-15deg) scale(10); opacity: 0; font-size: 1.6rem; margin-top: 40px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.1s; }
+        .stamp-active { transform: rotate(-15deg) scale(0.85); opacity: 0.8; }
+        #success-ending { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100001; flex-direction: column; justify-content: center; align-items: center; }
     </style>
 </head>
 <body>
@@ -132,7 +118,7 @@
         <h2 style="font-size:1.15rem; color:#f00; border-bottom:1px solid #600; padding-bottom:15px; margin-bottom:20px;">【聖瑪利亞孤兒院St. Maria's Orphanage - 特殊個案追蹤報告】</h2>
         <p><strong>受測者：</strong>Luca Veil<br>來自Veil家族的獨生子。（原生家族已於 2004 年火災中全員喪生）</p>
         <p><strong>衝突紀錄：</strong><br>1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。</p>
-        <p><strong>語言霸凌觀測：</strong><br>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
+        <p><strong>語言霸慶觀測：</strong><br>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
         <p><strong>冷藏室事件：</strong><br>為了測試其耐受極限，他在 4 月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
         <p style="color:#933; font-style:italic; border-left:3px solid #500; padding-left:15px; margin-top:25px;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
         <div style="text-align:right; min-height:100px;">
@@ -144,7 +130,6 @@
 
 <div id="success-ending">
     <div style="color:#f00; font-size:1.6rem; letter-spacing:5px; text-shadow:0 0 10px #f00;">你做得很好，現在快跑吧。</div>
-    <div style="color:#400; font-size:0.8rem; margin-top:30px; font-family:monospace;">SESSION_ERASED_SUCCESSFULLY</div>
 </div>
 
 <div id="death-screen"></div>
@@ -152,9 +137,10 @@
 <script>
     let currentMod = 1; let inputStr = ""; 
     const answers = { 1: "1", 2: "4", 3: "12" };
-    const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料都顯示無人生還，\n但那活下來的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的姓氏。加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
+    
+    // 確定的前傳文字內容
+    const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料都顯示無人生還，但那活下來的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的姓氏。加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
 
-    // --- 打字機效果 ---
     function typeWriter(text, i, targetId) {
         if (i < text.length) {
             let char = text.charAt(i);
@@ -162,7 +148,7 @@
             let delay = (char === '，' || char === '。' || char === '\n') ? 450 : 60;
             setTimeout(() => typeWriter(text, i + 1, targetId), delay);
         } else {
-            // 打字結束，顯現 YES/NO 按鈕
+            // 文字打完，顯示按鈕
             const btnContainer = document.getElementById('intro-btn-container');
             btnContainer.style.visibility = "visible";
             btnContainer.style.opacity = "1";
@@ -171,41 +157,30 @@
 
     window.onload = () => { typeWriter(introTextRaw, 0, 'intro-text'); };
 
-    // --- YES: 進入程序 ---
     function startGame() {
         document.getElementById('intro-screen').style.display = 'none';
         document.getElementById('main-terminal').style.display = 'flex';
     }
 
-    // --- NO: 隱藏結局 (快跑洪水) ---
     function triggerFloodRun() {
-        // 先顯示恐怖提示
         document.getElementById('intro-text').innerHTML = "<span style='color:red; font-weight:bold;'>黑暗中，有一雙眼睛正盯著你的後腦勺...</span>";
         document.getElementById('intro-btn-container').style.display = "none";
         
         setTimeout(() => {
             const deathScreen = document.getElementById('death-screen');
             deathScreen.style.display = "flex";
-            
-            // 塞滿「快跑」
             let words = "";
-            for (let i = 0; i < 1000; i++) {
-                words += `<span class="run-text-flood">快跑</span>`;
-            }
+            for (let i = 0; i < 1200; i++) { words += `<span class="run-text-flood">快跑</span>`; }
             deathScreen.innerHTML = words;
-            
-            // 螢幕震動
             document.body.classList.add('shake-active');
             
-            // 結束並重置
             setTimeout(() => {
                 document.body.innerHTML = ""; 
                 setTimeout(() => location.reload(), 2000);
-            }, 2800);
+            }, 3000);
         }, 1500);
     }
 
-    // --- 密碼邏輯 ---
     function submit() {
         if (inputStr === answers[currentMod]) {
             if (currentMod < 3) {
