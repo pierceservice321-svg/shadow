@@ -10,44 +10,25 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background-color: #000;
-            color: #900;
-            font-family: 'Noto Serif TC', serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
+            background-color: #000; color: #900; font-family: 'Noto Serif TC', serif;
+            margin: 0; padding: 0; display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow: hidden;
         }
 
-        /* 1280x720 基準容器 (在手機上會自適應比例) */
         .main-frame {
-            width: 100%;
-            max-width: 1280px;
-            height: 100vh;
-            position: relative;
-            background-color: #050000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            width: 100%; max-width: 1280px; height: 100vh; position: relative;
+            background-color: #050000; display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
 
-        /* 螢幕特效 */
         .scanlines {
             position: absolute; inset: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 3px 100%;
-            pointer-events: none; z-index: 1000;
+            background-size: 100% 4px, 3px 100%; pointer-events: none; z-index: 1000;
         }
 
-        /* 介面切換控制 */
         .screen { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
         .screen.active { display: flex; }
 
-        /* 打字機文字 */
         .typewriter-content {
             max-width: 800px; color: #c33; font-size: 1.2rem; line-height: 2;
             border-left: 3px solid #600; padding-left: 25px; text-align: left;
@@ -56,50 +37,51 @@
         .btn-container { display: flex; gap: 30px; margin-top: 40px; opacity: 0; transition: opacity 1.5s; }
         .btn {
             background: none; border: 2px solid #f00; color: #f00; padding: 12px 40px;
-            font-size: 1.3rem; cursor: pointer; font-family: 'Special Elite';
-            letter-spacing: 4px; font-weight: bold; transition: 0.3s;
+            font-size: 1.3rem; cursor: pointer; font-family: 'Special Elite'; letter-spacing: 4px; font-weight: bold;
         }
         .btn:hover { background: #f00; color: #000; box-shadow: 0 0 20px #f00; }
 
-        /* 終端機 UI */
         .terminal-box { width: 90%; max-width: 450px; padding: 30px; background: rgba(15, 0, 0, 0.95); border: 1px solid #800; }
-        #gate-title { font-family: 'Special Elite'; color: #f00; font-size: 1.5rem; margin-bottom: 5px; letter-spacing: 2px; }
+        #gate-title { font-family: 'Special Elite'; color: #f00; font-size: 1.5rem; margin-bottom: 5px; }
         .interference { font-family: monospace; font-size: 0.9rem; color: #500; height: 1.2rem; margin-bottom: 20px; letter-spacing: 5px; }
         #display {
             background: rgba(40, 0, 0, 0.8); border: 1px solid #700; color: #f00; height: 80px;
-            line-height: 80px; font-size: 3rem; margin-bottom: 25px;
-            font-family: 'Special Elite'; box-shadow: inset 0 0 20px #600; letter-spacing: 10px;
+            line-height: 80px; font-size: 3rem; margin-bottom: 25px; font-family: 'Special Elite'; box-shadow: inset 0 0 20px #600; letter-spacing: 10px;
         }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .key { background: rgba(60, 0, 0, 0.4); border: 1px solid #900; color: #c77; padding: 18px 0; font-size: 1.5rem; cursor: pointer; font-family: 'Special Elite'; }
 
-        /* 過場動畫 */
+        /* 過場 */
         #load-msg { font-family: 'Special Elite'; color: #f00; font-size: 1.2rem; margin-bottom: 20px; }
         .loader-bar { width: 250px; height: 3px; background: #300; position: relative; }
         .loader-fill { position: absolute; left: 0; top: 0; height: 100%; background: #f00; width: 0%; transition: width 0.8s linear; }
 
-        /* 報告書樣式 */
+        /* 報告 */
         .evidence-folder {
             width: 95%; max-width: 700px; max-height: 85vh; background: rgba(10, 0, 0, 0.95);
-            border: 1px solid #800; color: #d33; padding: 30px; overflow-y: auto; text-align: left; line-height: 1.8;
+            border: 1px solid #800; color: #d33; padding: 30px; overflow-y: auto; text-align: left;
         }
         .label { color: #f00; font-weight: bold; border-left: 4px solid #f00; padding-left: 12px; margin-top: 20px; display: block; }
 
-        /* 鮮紅崩潰閃爍動畫 (0.03s) */
-        @keyframes strobeRed {
-            0% { background-color: #000; }
-            50% { background-color: #f00; }
-            100% { background-color: #000; }
-        }
+        /* 紅色崩潰閃爍 */
+        @keyframes strobeRed { 0% { background-color: #000; } 50% { background-color: #f00; } 100% { background-color: #000; } }
         .red-death-active { animation: strobeRed 0.03s infinite steps(1) !important; }
 
-        #failure-screen {
-            position: fixed; inset: 0; z-index: 100000; display: none; overflow: hidden; background: #000;
+        #failure-screen { position: fixed; inset: 0; z-index: 100000; display: none; overflow: hidden; background: #000; }
+        
+        /* NOW RUN 字樣特效 */
+        .now-run {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-family: 'Special Elite'; color: #fff; font-size: 15vw; white-space: nowrap;
+            z-index: 100001; text-shadow: 0 0 30px #f00; animation: runShake 0.1s infinite;
         }
-        .glitch-word {
-            position: absolute; font-family: 'Cormorant Unicase'; font-weight: bold;
-            color: #fff; text-shadow: 0 0 15px #000; pointer-events: none; white-space: nowrap;
+        @keyframes runShake {
+            0% { transform: translate(-52%, -50%) scale(1); }
+            50% { transform: translate(-48%, -52%) scale(1.1); }
+            100% { transform: translate(-50%, -48%) scale(1); }
         }
+
+        .glitch-word { position: absolute; font-family: 'Cormorant Unicase'; font-weight: bold; color: #fff; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -118,7 +100,7 @@
         <div class="screen" id="sc-terminal">
             <div class="terminal-box">
                 <div id="gate-title">STAGE 01: 生還者</div>
-                <div class="interference" id="noise-layer">RUNNING_...</div>
+                <div class="interference" id="noise-layer"></div>
                 <div id="display">-</div>
                 <div class="keypad">
                     <button class="key" onclick="press('1')">1</button><button class="key" onclick="press('2')">2</button><button class="key" onclick="press('3')">3</button>
@@ -138,23 +120,17 @@
 
         <div class="screen" id="sc-report">
             <div class="evidence-folder">
-                <div style="text-align:center; color:#f00; font-family:'Special Elite'; font-size:1.8rem; margin-bottom:20px; text-shadow:0 0 10px #f00;">機密檔案：CASE #0412</div>
-                
+                <div style="text-align:center; color:#f00; font-family:'Special Elite'; font-size:1.8rem; margin-bottom:20px;">機密檔案：CASE #0412</div>
                 <span class="label">【聖瑪利亞孤兒院 St. Maria's Orphanage】</span>
                 <span class="label">【特殊個案追蹤報告】</span>
                 受測者：Luca Veil<br>來自Veil家族的獨生子。（原生家族已於2004年火災中全員喪生）
-
                 <span class="label">衝突紀錄：</span>
                 1月12日，受測者遭到院內其餘五名兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致雙手指關節✕✕。
-
-                <span class="label">語言霸凌觀測：</span>
+                <span class="label">語言霸靈觀測：</span>
                 院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙綠眸注視著霸凌者，似是在觀察某種即將腐爛的標本。
-
                 <span class="label">冷藏室事件：</span>
                 為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣，他從未試圖求救。
-
                 <p style="border-top:1px dashed #600; padding-top:20px; font-style:italic; color:#944;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
-
                 <button class="btn" style="width:100%; margin-top:30px;" onclick="location.reload()">PURGE & EXIT</button>
             </div>
         </div>
@@ -164,32 +140,23 @@
 
     <script>
         "use strict";
-
-        let currentStage = 1;
-        let inputStr = "";
-        let errorCount = 0;
+        let currentStage = 1; let inputStr = ""; let errorCount = 0;
         const answers = { 1: "1", 2: "4", 3: "12" };
         const stageTitles = { 1: "STAGE 01: 生還者", 2: "STAGE 02: 耐受測試", 3: "STAGE 03: 捏造血緣" };
-        const crashWords = ["DEAD", "VOID", "✕✕✕", "RUN", "HELP", "FATAL_ERR", "HE_WATCHES", "NO_ESCAPE", "ERROR", "†", "∑"];
-
-        // 1. 打字機初始化
-        const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室的保險箱嗎？";
+        const crashWords = ["DEAD", "VOID", "✕✕✕", "RUN", "HELP", "FATAL_ERR", "NO_ESCAPE", "ERROR"];
 
         window.onload = () => {
-            typeWriter(introTextRaw, 0, 'intro-text', () => {
-                document.getElementById('intro-btns').style.opacity = "1";
-            });
+            const txt = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室的保險箱嗎？";
+            typeWriter(txt, 0, 'intro-text', () => { document.getElementById('intro-btns').style.opacity = "1"; });
         };
 
         function typeWriter(text, i, targetId, callback) {
             if (i < text.length) {
                 document.getElementById(targetId).innerHTML += (text[i] === '\n' ? '<br>' : text[i]);
-                let speed = (text[i] === '。' || text[i] === '？' || text[i] === '\n') ? 450 : 45;
-                setTimeout(() => typeWriter(text, i + 1, targetId, callback), speed);
+                setTimeout(() => typeWriter(text, i + 1, targetId, callback), (text[i] === '。' || text[i] === '\n') ? 450 : 45);
             } else if (callback) callback();
         }
 
-        // 2. 亂碼干擾 (0.07s)
         setInterval(() => {
             const noise = document.getElementById('noise-layer');
             if (noise) {
@@ -199,95 +166,61 @@
             }
         }, 70);
 
-        // 3. 切換畫面
-        function switchScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function goToStage(s) {
-            switchScreen('sc-terminal');
-            updateDisplay();
-        }
-
-        // 4. 輸入邏輯
         function press(n) {
             let limit = (currentStage === 3) ? 2 : 1;
-            if (inputStr.length < limit) {
-                inputStr += n;
-                updateDisplay();
-            }
+            if (inputStr.length < limit) { inputStr += n; updateDisplay(); }
         }
 
         function updateDisplay() {
             const display = document.getElementById('display');
             if (currentStage === 3) {
-                if (inputStr.length === 0) display.innerText = "--";
-                else if (inputStr.length === 1) display.innerText = inputStr + "-";
-                else display.innerText = inputStr;
-            } else {
-                display.innerText = (inputStr === "") ? "-" : inputStr;
-            }
+                display.innerText = inputStr.length === 0 ? "--" : (inputStr.length === 1 ? inputStr + "-" : inputStr);
+            } else { display.innerText = inputStr === "" ? "-" : inputStr; }
         }
 
         function clearD() { inputStr = ""; updateDisplay(); }
 
         function submit() {
-            if (inputStr === answers[currentStage]) {
-                runTransition();
-            } else {
-                errorCount++;
-                if (errorCount >= 3) triggerFailure();
-                else {
-                    document.getElementById('display').innerText = "ERR";
-                    setTimeout(clearD, 600);
-                }
-            }
+            if (inputStr === answers[currentStage]) { runTransition(); }
+            else { errorCount++; if (errorCount >= 3) triggerFailure(); else { document.getElementById('display').innerText = "ERR"; setTimeout(clearD, 600); } }
         }
 
-        // 5. 過場動畫
         function runTransition() {
-            switchScreen('sc-loading');
-            const fill = document.getElementById('load-fill');
-            fill.style.width = '0%';
-            setTimeout(() => fill.style.width = '100%', 50);
-            
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('sc-loading').classList.add('active');
+            const fill = document.getElementById('load-fill'); fill.style.width = '100%';
             setTimeout(() => {
                 if (currentStage < 3) {
-                    currentStage++;
-                    inputStr = "";
+                    currentStage++; inputStr = ""; fill.style.width = '0%';
                     document.getElementById('gate-title').innerText = stageTitles[currentStage];
-                    switchScreen('sc-terminal');
+                    document.getElementById('sc-terminal').classList.add('active');
                     updateDisplay();
-                } else {
-                    switchScreen('sc-report');
-                }
+                } else { document.getElementById('sc-report').classList.add('active'); }
             }, 1200);
         }
 
-        // 6. 最終失敗：紅色鮮血閃爍 (0.03s)
         function triggerFailure() {
             const screen = document.getElementById('failure-screen');
             screen.style.display = "block";
-            screen.classList.add('red-death-active'); // 啟動紅色閃爍
+            screen.classList.add('red-death-active');
+            
+            // 跳出 NOW RUN.
+            const runTxt = document.createElement('div');
+            runTxt.className = 'now-run';
+            runTxt.innerText = "NOW RUN.";
+            screen.appendChild(runTxt);
 
-            setTimeout(() => window.location.reload(), 8000);
+            setTimeout(() => window.location.reload(), 7000);
 
             setInterval(() => {
-                const word = crashWords[Math.floor(Math.random() * crashWords.length)];
-                const fontSize = Math.floor(Math.random() * 15 + 5) + "vw";
-                const x = Math.random() * 90;
-                const y = Math.random() * 90;
-                
                 const div = document.createElement('div');
                 div.className = 'glitch-word';
-                div.style.left = x + '%'; div.style.top = y + '%';
-                div.style.fontSize = fontSize;
+                div.style.left = Math.random() * 90 + '%'; div.style.top = Math.random() * 90 + '%';
+                div.style.fontSize = Math.random() * 15 + 5 + "vw";
                 div.style.transform = `rotate(${Math.random() * 40 - 20}deg)`;
-                div.innerText = word;
-                
+                div.innerText = crashWords[Math.floor(Math.random() * crashWords.length)];
                 screen.appendChild(div);
-                if (screen.children.length > 40) screen.removeChild(screen.firstChild);
+                if (screen.children.length > 50) screen.removeChild(screen.children[1]);
             }, 20);
         }
     </script>
