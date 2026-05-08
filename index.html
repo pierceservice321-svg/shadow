@@ -16,14 +16,12 @@
             min-height: 100vh; overflow: hidden; 
         }
 
-        /* 掃描線濾鏡 */
         body::before {
             content: " "; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        /* 前傳畫面 */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; 
             flex-direction: column; justify-content: center; align-items: center; 
@@ -40,7 +38,6 @@
         .btn:hover { background: #f00; color: #000; box-shadow: 0 0 20px #f00; }
         .btn-no { border-color: #444; color: #666; }
 
-        /* 終端機面板 */
         .terminal-container { width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; border: 1px solid #800; background: rgba(10, 0, 0, 0.95); position: relative; }
         #glitch-code { font-family: monospace; font-size: 0.75rem; color: #500; margin-top: 5px; height: 1.2rem; overflow: hidden; letter-spacing: 1px; }
         #display { background: rgba(20, 0, 0, 0.6); border: 1px solid #500; color: #f00; height: 75px; line-height: 75px; text-align: center; font-size: 2.2rem; letter-spacing: 12px; margin: 20px 0; font-family: 'Special Elite', cursive; text-shadow: 0 0 15px #f00; }
@@ -48,7 +45,6 @@
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
 
-        /* 解密動畫層 */
         #decrypt-overlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(10, 0, 0, 0.98); z-index: 200; flex-direction: column; justify-content: center; align-items: center;
@@ -57,21 +53,28 @@
         .progress-bar { width: 80%; height: 4px; background: #200; border-radius: 2px; overflow: hidden; }
         .progress-fill { width: 0%; height: 100%; background: #f00; box-shadow: 0 0 10px #f00; }
 
-        /* 追蹤報告 */
         #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
         .evidence-folder { 
-            position: relative; width: 95%; max-width: 620px; padding: 40px 45px 120px 45px; color: #d22; 
+            position: relative; width: 95%; max-width: 620px; padding: 40px 45px 60px 45px; color: #d22; 
             max-height: 90vh; overflow-y: auto; border: 1px solid #600; line-height: 1.8; background: #0a0000;
             box-shadow: inset 0 0 50px #000;
         }
         
-        /* TOP SECRET：縮小、右下角、不再阻礙閱讀 */
+        /* 修正後的章戳容器：確保他在內容流的最底部 */
+        .bottom-stamp-area {
+            position: relative;
+            margin-top: 50px;
+            width: 100%;
+            text-align: right;
+        }
+
         .stamp {
-            position: absolute; bottom: 30px; right: 30px;
+            display: inline-block;
             border: 2px solid #f00; color: #f00; font-family: 'Special Elite', cursive; 
-            font-size: 0.9rem; padding: 4px 15px; opacity: 0.5; font-weight: bold; 
-            text-shadow: 0 0 5px #f00; transform: rotate(-12deg); pointer-events: none;
-            background: rgba(10, 0, 0, 0.5);
+            font-size: 0.9rem; padding: 5px 15px; opacity: 0.5; font-weight: bold; 
+            text-shadow: 0 0 5px #f00; transform: rotate(-10deg);
+            pointer-events: none;
+            margin-bottom: 10px;
         }
 
         .report-section { margin-bottom: 25px; padding-left: 15px; border-left: 2px solid #500; }
@@ -136,8 +139,11 @@
         <div class="report-section" style="border:none; background:rgba(50,0,0,0.15); padding:15px; margin-top:10px;">
             <p style="margin:0; font-size:0.95rem; color:#b00;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
         </div>
-        <button onclick="triggerSuccessEnd()" style="width:100%; background:none; color:#f00; border:1px solid #f00; padding:18px; margin-top:25px; cursor:pointer; letter-spacing:3px; font-weight:bold;">抹除存取紀錄 (PURGE)</button>
-        <div class="stamp">TOP SECRET</div>
+        
+        <div class="bottom-stamp-area">
+            <div class="stamp">TOP SECRET</div>
+            <button onclick="triggerSuccessEnd()" style="width:100%; background:none; color:#f00; border:1px solid #f00; padding:18px; cursor:pointer; letter-spacing:3px; font-weight:bold; position:relative; z-index:5;">抹除存取紀錄 (PURGE)</button>
+        </div>
     </div>
 </div>
 
@@ -153,7 +159,7 @@
     const answers = { 1: "1", 2: "4", 3: "12" };
     const gateTitles = { 1: "[ 驗證程序一：身份殘留 ]", 2: "[ 驗證程序二：耐受測試 ]", 3: "[ 驗證程序三：捏造血緣 ]" };
     const decryptMsgs = { 1: "SECURITY LAYER 1: BREACHING...", 2: "DEEP DATA EXTRACTION IN PROGRESS...", 3: "CORE SYSTEM TAKEOVER: CRACKING..." };
-    const decryptTimes = { 1: 2000, 2: 5000, 3: 8500 }; // 遞增的時間 (毫秒)
+    const decryptTimes = { 1: 2000, 2: 5000, 3: 8500 }; 
 
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
 
@@ -217,28 +223,18 @@
         const fill = document.getElementById('p-fill');
         const hex = document.getElementById('decrypt-hex');
         const msg = document.getElementById('decrypt-msg');
-        
         const duration = decryptTimes[currentMod];
         overlay.style.display = 'flex';
         msg.innerText = decryptMsgs[currentMod];
-        
         let start = null;
         const step = (timestamp) => {
             if (!start) start = timestamp;
             const elapsed = timestamp - start;
             const progress = Math.min((elapsed / duration) * 100, 100);
-            
             fill.style.width = progress + "%";
             hex.innerText = "OVERRIDE_CODE: 0x" + Math.random().toString(16).substring(2, 10).toUpperCase();
-
-            if (elapsed < duration) {
-                requestAnimationFrame(step);
-            } else {
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                    fill.style.width = "0%";
-                    callback();
-                }, 400);
+            if (elapsed < duration) { requestAnimationFrame(step); } else {
+                setTimeout(() => { overlay.style.display = 'none'; fill.style.width = "0%"; callback(); }, 400);
             }
         };
         requestAnimationFrame(step);
