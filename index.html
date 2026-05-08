@@ -16,28 +16,44 @@
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 9999; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; padding: 30px; text-align: center;
+            justify-content: center; align-items: center; padding: 20px; text-align: center;
         }
         #intro-text { 
-            max-width: 600px; color: #a00; font-size: 1.2rem; line-height: 2.2; 
-            margin-bottom: 60px; text-shadow: 0 0 8px rgba(139, 0, 0, 0.6);
+            max-width: 90%; color: #a00; font-size: 1.05rem; line-height: 1.8; 
+            margin-bottom: 40px; text-shadow: 0 0 8px rgba(139, 0, 0, 0.6);
         }
         
-        .start-btn { 
+        /* 選項容器 */
+        .choice-container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+
+        .btn { 
             background: rgba(255, 0, 0, 0.05); border: 2px solid #f00; color: #f00; 
-            padding: 22px 70px; font-size: 1.4rem; cursor: pointer; letter-spacing: 5px;
+            padding: 15px 40px; font-size: 1.1rem; cursor: pointer; letter-spacing: 3px;
             font-family: serif; text-transform: uppercase; font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); animation: pulse 2s infinite; transition: 0.3s;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); transition: 0.3s;
         }
         
+        .yes-btn { animation: pulse 2s infinite; }
+        .no-btn { border-color: #400; color: #400; box-shadow: none; }
+
         @keyframes pulse {
             0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); opacity: 0.8; }
-            50% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.7); opacity: 1; }
+            50% { box-shadow: 0 0 25px rgba(255, 0, 0, 0.7); opacity: 1; }
             100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); opacity: 0.8; }
         }
-        .start-btn:active { background: #f00; color: #000; }
 
-        /* 2. 解謎畫面 */
+        /* 震動與危險畫面效果 */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            100% { transform: translate(1px, 1px) rotate(0deg); }
+        }
+        .danger-mode { animation: shake 0.2s infinite; background: #300 !important; }
+
+        /* 2. 解謎畫面 (保持原有紅黑風格) */
         .terminal-container { 
             width: 95%; max-width: 450px; background: #050000; border: 2px solid #800; 
             padding: 30px; display: none; flex-direction: column; 
@@ -45,41 +61,19 @@
         
         #display { 
             background: #000; border: 1px solid #500; color: #f00; 
-            height: 90px; line-height: 90px; text-align: center; font-size: 2.8rem; 
-            letter-spacing: 15px; margin-bottom: 30px; text-shadow: 0 0 15px #f00;
+            height: 80px; line-height: 80px; text-align: center; font-size: 2.5rem; 
+            letter-spacing: 15px; margin-bottom: 25px; text-shadow: 0 0 15px #f00;
         }
 
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .key { 
-            background: #0a0000; border: 1px solid #600; color: #a00; 
-            padding: 35px 0; font-size: 2.2rem; cursor: pointer; font-family: "Courier New", monospace;
-        }
-        .key:active { background: #a00; color: #000; border-color: #f00; }
-        #status-msg { font-size: 1.1rem; color: #700; text-align: center; margin-top: 25px; min-height: 1.5em; letter-spacing: 1px; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .key { background: #0a0000; border: 1px solid #600; color: #a00; padding: 30px 0; font-size: 1.8rem; cursor: pointer; }
+        .key:active { background: #a00; color: #000; }
+        #status-msg { font-size: 1rem; color: #700; text-align: center; margin-top: 20px; }
 
-        /* 3. 真相報告 */
-        #secret-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 10000; justify-content: center; align-items: center; padding: 15px; 
-        }
-        .evidence-folder { 
-            width: 100%; max-width: 500px; background: #120000; color: #c00; 
-            padding: 35px; max-height: 90vh; overflow-y: auto; border: 1px solid #600;
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.1); position: relative;
-        }
-        .stamp { 
-            border: 4px solid #f00; color: #f00; padding: 5px 15px; font-weight: bold; 
-            transform: rotate(15deg); position: absolute; top: 25px; right: 25px; 
-            font-family: Arial, sans-serif; letter-spacing: 2px; text-shadow: 0 0 5px #f00;
-        }
-        .folder-header { border-bottom: 2px solid #800; padding-bottom: 15px; margin-bottom: 20px; }
-        .folder-title-en { font-size: 0.8rem; letter-spacing: 2px; color: #600; margin-bottom: 5px; }
-        .folder-title-zh { font-size: 1.3rem; margin: 0; color: #c00; }
-        
-        .observation-note { 
-            color: #ff4d4d; font-weight: bold; background: rgba(255, 0, 0, 0.05); 
-            padding: 20px; border-left: 5px solid #800; margin-top: 30px; font-style: italic;
-        }
+        /* 3. 真相報告 (代碼略，與之前相同) */
+        #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
+        .evidence-folder { width: 100%; max-width: 500px; background: #120000; color: #c00; padding: 30px; border: 1px solid #600; position: relative; }
+        .stamp { border: 3px solid #f00; color: #f00; padding: 4px 12px; transform: rotate(15deg); position: absolute; top: 20px; right: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -91,19 +85,24 @@
         雖然資料顯示無人生還，<br>
         但那個活下來的孩子，學會了如何服從規則。<br>
         他在深處的冰庫裡被反鎖了整整四個小時。<br>
-        直到那年的十二號，他獲得了新的姓氏：Luciano。
+        直到那年的十二號，他獲得了新的姓氏：Luciano。<br>
+        <strong style="color: #f00; font-size: 1.1rem;">你確定要進入地下室嗎？</strong>
     </div>
-    <button class="start-btn" onclick="startGame()">[ ENTER VAULT ]</button>
+    <div class="choice-container">
+        <button class="btn yes-btn" onclick="startGame()">YES</button>
+        <button class="btn no-btn" onclick="encounterDanger()">NO</button>
+    </div>
 </div>
 
 <div class="terminal-container" id="main-terminal">
-    <div style="font-size:0.9rem; color:#800; text-align:center; margin-bottom:15px; letter-spacing:3px; font-family:monospace;">ST. MARIA'S // DATA ACCESS</div>
+    <div style="font-size:0.8rem; color:#800; text-align:center; margin-bottom:15px; letter-spacing:3px;">ST. MARIA'S // DATA ACCESS</div>
     <div style="text-align:center; margin-bottom:20px;"><p id="current-gate" style="color:#f00; font-style:italic;">PROTOCOL_01: SURVIVORS</p></div>
-    <div id="display">-</div> <div class="keypad">
+    <div id="display">-</div>
+    <div class="keypad">
         <button class="key" onclick="press('1')">1</button><button class="key" onclick="press('2')">2</button><button class="key" onclick="press('3')">3</button>
         <button class="key" onclick="press('4')">4</button><button class="key" onclick="press('5')">5</button><button class="key" onclick="press('6')">6</button>
         <button class="key" onclick="press('7')">7</button><button class="key" onclick="press('8')">8</button><button class="key" onclick="press('9')">9</button>
-        <button class="key" style="color:#f00; font-family:serif;" onclick="clearD()">CLEAR</button><button class="key" onclick="press('0')">0</button><button class="key" style="color:#f00; font-family:serif;" onclick="submit()">EXEC</button>
+        <button class="key" style="color:#f00;" onclick="clearD()">CLR</button><button class="key" onclick="press('0')">0</button><button class="key" style="color:#f00;" onclick="submit()">EXE</button>
     </div>
     <div id="status-msg">WAITING FOR AUTHENTICATION...</div>
 </div>
@@ -111,25 +110,14 @@
 <div id="secret-overlay">
     <div class="evidence-folder">
         <div class="stamp">TOP SECRET</div>
-        <div class="folder-header">
-            <div class="folder-title-en">ST. MARIA'S ORPHANAGE - CASE REPORT</div>
-            <h2 class="folder-title-zh">【聖瑪利亞孤兒院 - 特殊個案追蹤報告】</h2>
-        </div>
-        <div style="margin-top: 10px; color: #c00;">
+        <h2 style="color: #c00; font-size: 1.2rem; border-bottom: 2px solid #800; padding-bottom: 10px;">【聖瑪利亞孤兒院 - 追蹤報告】</h2>
+        <div style="margin-top: 15px; font-size: 0.95rem; line-height: 1.8;">
             <p><strong>受測者：</strong>Luca</p>
-            <p><strong>姓氏：</strong>不詳 / Unknown。</p>
-            <hr style="border:0; border-top:1px dashed #500; margin: 25px 0;">
-            <p><strong>[ 衝突紀錄 / CONFLICT ]</strong><br>
-            1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。</p>
-            <p><strong>[ 語言霸凌觀測 / HARASSMENT ]</strong><br>
-            院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
-            <p><strong>[ 冷藏室事件 / EXPERIMENT ]</strong><br>
-            為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
-            <div class="observation-note">
-                這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。
-            </div>
+            <p><strong>[ 報告摘要 ]</strong><br>
+            受測者展現了極強的情感隔離能力。在4月冷藏室測試中，他在極低溫下維持了長達四個小時的靜默。此等特質使其成為 Luciano 家族最完美的「繼承者」實驗品。</p>
+            <p style="color: #f44; font-style: italic; background: rgba(255,0,0,0.1); padding: 10px; border-left: 3px solid #800;">這一切的測試似乎是有人在背後刻意指導...</p>
         </div>
-        <button onclick="location.reload()" style="width:100%; background:#600; color:#000; border:none; padding:20px; margin-top:40px; font-size: 1.1rem; cursor:pointer; font-weight:bold; letter-spacing:3px;">ERASE DATA & EXIT</button>
+        <button onclick="location.reload()" style="width:100%; background:#600; color:#000; border:none; padding:15px; margin-top:20px; font-weight:bold; cursor:pointer;">ERASE DATA</button>
     </div>
 </div>
 
@@ -140,34 +128,36 @@
         updateHint();
     }
 
-    let currentMod = 1; 
-    let inputStr = ""; 
-    let failCount = 0;
+    function encounterDanger() {
+        const screen = document.getElementById('intro-screen');
+        const text = document.getElementById('intro-text');
+        screen.classList.add('danger-mode');
+        text.innerHTML = "<h1 style='color: #ff0000; font-size: 2rem; text-shadow: 0 0 20px #000;'>危險</h1><br><br><span style='color: #fff;'>暗處的東西發現你了。<br>你不該猶豫的。</span>";
+        document.querySelector('.choice-container').style.display = 'none';
+        
+        setTimeout(() => {
+            location.reload(); // 3秒後強制刷新畫面回到開頭
+        }, 3000);
+    }
+
+    let currentMod = 1; let inputStr = ""; let failCount = 0;
     const answers = { 1: "1", 2: "4", 3: "12" };
     const gates = { 1: "PROTOCOL_01: SURVIVORS", 2: "PROTOCOL_02: PENALTY", 3: "PROTOCOL_03: CONTRACT" };
 
-    // 根據當前題目更新橫線提示
     function updateHint() {
         const display = document.getElementById('display');
-        if (currentMod === 3) {
-            display.innerText = "--";
-        } else {
-            display.innerText = "-";
-        }
+        display.innerText = (currentMod === 3) ? "--" : "-";
         inputStr = "";
     }
 
     function press(n) {
-        let maxLength = (currentMod === 3) ? 2 : 1;
-        if (inputStr.length < maxLength) {
-            inputStr += n;
-            document.getElementById('display').innerText = inputStr;
+        let max = (currentMod === 3) ? 2 : 1;
+        if (inputStr.length < max) {
+            inputStr += n; document.getElementById('display').innerText = inputStr;
         }
     }
 
-    function clearD() {
-        updateHint();
-    }
+    function clearD() { updateHint(); }
 
     function submit() {
         if (inputStr === "") return;
@@ -179,9 +169,8 @@
                 if (currentMod < 3) {
                     currentMod++;
                     document.getElementById('current-gate').innerText = gates[currentMod];
-                    status.innerText = "SUCCESS. LEVEL UP.";
-                    status.style.color = "#800";
-                    updateHint(); // 切換題目時自動更新橫線
+                    status.innerText = "SUCCESS."; status.style.color = "#800";
+                    updateHint();
                 } else {
                     document.getElementById('main-terminal').style.display = 'none';
                     document.getElementById('secret-overlay').style.display = 'flex';
@@ -189,10 +178,9 @@
             } else {
                 failCount++;
                 if (failCount >= 3) {
-                    document.body.innerHTML = "<div style='color:red; text-align:center; margin-top:45vh; font-family:monospace; font-size:2rem; letter-spacing:5px;'>SYSTEM PERMANENTLY LOCKED</div>";
+                    document.body.innerHTML = "<div style='color:red; text-align:center; margin-top:45vh; font-family:monospace; font-size:1.5rem;'>ACCESS DENIED PERMANENTLY</div>";
                 } else {
-                    status.innerText = `[ ACCESS DENIED ] TRIES LEFT: ${3 - failCount}`;
-                    updateHint();
+                    status.innerText = `[ DENIED ] LEFT: ${3 - failCount}`; updateHint();
                 }
             }
         }, 800);
