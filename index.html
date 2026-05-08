@@ -16,14 +16,12 @@
             min-height: 100vh; overflow: hidden; 
         }
 
-        /* 濾鏡效果 */
         body::before {
             content: " "; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        /* 前傳區塊 */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; 
             flex-direction: column; justify-content: center; align-items: center; 
@@ -44,9 +42,8 @@
             transition: 0.3s; letter-spacing: 6px; font-weight: bold;
         }
         .btn:hover { background: #f00; color: #000; box-shadow: 0 0 20px #f00; }
-        .btn-run { border-color: #600; color: #800; } /* 讓 RUN 按鈕看起來更壓抑一點 */
+        .btn-run { border-color: #600; color: #800; }
 
-        /* 終端機介面 */
         .terminal-container { 
             width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; 
             border: 1px solid #800; background: rgba(10, 0, 0, 0.95);
@@ -60,7 +57,6 @@
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
 
-        /* RUN 結局：雙語崩潰洪水 */
         #death-screen {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 100000; overflow-y: auto; padding: 20px;
@@ -70,11 +66,9 @@
         .shake-active { animation: screen-shake 0.3s infinite; }
         @keyframes screen-shake { 0% { transform: translate(0,0); } 20% { transform: translate(5px, 5px); } 40% { transform: translate(-5px, -5px); } 100% { transform: translate(0,0); } }
 
-        /* 報告書 */
         #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
         .evidence-folder { width: 95%; max-width: 520px; padding: 45px; color: #d22; max-height: 85vh; overflow-y: auto; border: 1px solid #400; line-height: 1.9; }
         
-        /* 成功結局 (YES) */
         #success-ending { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 100001; flex-direction: column; justify-content: center; align-items: center; text-align: center;
@@ -113,7 +107,7 @@
     <div class="evidence-folder" id="folder-box">
         <h2 style="font-size:1.15rem; color:#f00; border-bottom:1px solid #600; padding-bottom:15px; margin-bottom:20px;">【聖瑪利亞孤兒院 - 特殊個案追蹤報告】</h2>
         <p><strong>受測者：</strong>Luca Veil</p>
-        <p><strong>衝突紀錄：</strong><br>受測者死死護住那枚象徵家族的「V」字金屬扣。即便揹負著被強加的罪行，他的意志仍未被摧毀。</p>
+        <p><strong>衝突紀錄：</strong><br>受測者護住刻有「V」字樣的金屬扣。即便接受了新的罪名，他的意志仍未被摧毀。</p>
         <p><strong>結論：</strong><br>檔案已封存。任何未經授權的存取都將觸發物理清除程序。</p>
         <button id="purge-btn" onclick="triggerSuccessEnd()" style="opacity:1; width:100%; background:none; color:#f00; border:1px solid #f00; padding:18px; margin-top:40px; cursor:pointer; letter-spacing:3px;">抹除存取紀錄 (PURGE)</button>
     </div>
@@ -131,8 +125,7 @@
     const answers = { 1: "1", 2: "4", 3: "12" };
     const gateTitles = { 1: "[ 驗證程序一：身份殘留 ]", 2: "[ 驗證程序二：耐受測試 ]", 3: "[ 驗證程序三：捏造血緣 ]" };
 
-    // --- 關鍵修正：罪名 ---
-    const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料都顯示無人生還，但那活下來的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名。揹負著不屬於他的十字架。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
+    const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料都顯示無人生還，但那活下來的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
 
     function typeWriter(text, i, targetId, callback) {
         if (i < text.length) {
@@ -166,7 +159,6 @@
         document.getElementById('glitch-code').innerText = code;
     }
 
-    // --- RUN 結局邏輯 ---
     let floodCount = 0;
     const maxFlood = 800;
     const phrases = ["快跑 ", "RUN ", "GET OUT ", "跑 ", "RUN! ", "HURRY "];
