@@ -70,24 +70,25 @@
             background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; padding: 15px; 
         }
         .evidence-folder { 
-            width: 100%; max-width: 480px; padding: 40px; color: #d22; 
+            width: 95%; max-width: 500px; padding: 40px; color: #d22; 
             max-height: 85vh; overflow-y: auto; border-top: 5px solid #a00;
+            line-height: 1.8; text-align: justify;
         }
-        .report-content { font-family: "Courier New", Courier, monospace; }
+        
+        .report-content { font-family: "Courier New", Courier, monospace; white-space: pre-wrap; }
         
         .bottom-stamp { 
             border: 4px double #f00; color: #f00; padding: 8px 20px; font-weight: bold; 
             display: inline-block; transform: rotate(-12deg); opacity: 0.8;
-            font-size: 1.2rem; margin-top: 20px;
+            font-size: 1.2rem; margin-top: 20px; font-family: sans-serif;
         }
-
-        /* 打字機動畫 */
-        .typing { overflow: hidden; border-right: .15em solid orange; white-space: nowrap; animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite; }
 
         #ending-screen {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 10001; flex-direction: column; justify-content: center; align-items: center;
         }
+        .fade-in-text { animation: fadeIn 4s forwards; opacity: 0; font-style: italic; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -96,7 +97,7 @@
     <div id="intro-text" style="text-align: left; border-left: 2px solid #500; padding-left: 20px;">
         2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。<br>
         縱然所有資料都顯示無人生還，<br>
-        但那活下來的孩子，學會了服從規則。<br>
+        但那活下來的孩子，學會了如何服從規則。<br>
         他在2✕✕✕年✕✕月12號被迫接受了新的姓氏。加入了不屬於他的家族。<br>
         被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。<br><br>
         <span style="color: #f00; letter-spacing: 2px;">你確定要進入地下室嗎？</span>
@@ -132,7 +133,7 @@
 </div>
 
 <div id="ending-screen">
-    <div class="fade-in-text" style="color:#f00; font-size:1.4rem; letter-spacing:2px; font-style:italic;">你做得很好，但快躲起來吧。</div>
+    <div class="fade-in-text" style="color:#f00; font-size:1.4rem; letter-spacing:2px;">你做得很好，但快躲起來吧。</div>
     <p style="color: #300; font-size: 0.7rem; margin-top: 40px; letter-spacing: 5px;">RECORDS_PURGED</p>
 </div>
 
@@ -141,7 +142,8 @@
     const answers = { 1: "1", 2: "4", 3: "12" };
     const gates = { 1: "[ 驗證程序一：身份殘留 ]", 2: "[ 驗證程序二：耐受體質 ]", 3: "[ 驗證程序三：捏造血緣 ]" };
 
-    const reportText = `【聖瑪利亞孤兒院 特殊個案追蹤報告】\n\n受測者：Luca\n姓氏：Veil（原生家族已於2004年火災中全員喪生）\n\n衝突紀錄：1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物。\n\n語言霸凌觀測：院內兒童頻繁以「異類」、「雜種」等詞彙進行排擠。受測者表現出極強的情感隔離，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。\n\n冷藏室事件：為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。\n\n這一切似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。`;
+    // 使用 \n 作為換行符
+    const reportText = "【聖瑪利亞孤兒院 特殊個案追蹤報告】\n\n受測者：Luca\n姓氏：Veil（原生家族已於2004年火災中全員喪生）\n\n衝突紀錄：1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。\n\n語言霸凌觀測：院內兒童頻繁以「異類」、「雜種」等詞彙進行排擠。受測者表現出極強的情感隔離，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。\n\n冷藏室事件：為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。\n\n這一切似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。";
 
     function startGame() {
         document.getElementById('intro-screen').style.display = 'none';
@@ -149,12 +151,22 @@
         updateHint();
     }
 
+    // 強化版打字機：支援換行
     function typeWriter(text, i, fnCallback) {
         if (i < text.length) {
-            document.getElementById("report-box").innerHTML = text.substring(0, i+1) +'<span aria-hidden="true"></span>';
-            setTimeout(function() { typeWriter(text, i + 1, fnCallback) }, 30);
+            let char = text.charAt(i);
+            // 如果遇到 \n 則換成 <br>
+            let currentHTML = text.substring(0, i + 1).replace(/\n/g, '<br>');
+            document.getElementById("report-box").innerHTML = currentHTML + '<span style="color:#f00">_</span>';
+            
+            setTimeout(function() {
+                typeWriter(text, i + 1, fnCallback)
+            }, 40); // 稍微調慢一點點，增加閱讀感
         } else {
-            document.getElementById("report-box").innerHTML += `<br><div style="text-align:right"><div class="bottom-stamp">TOP SECRET</div></div><button onclick="triggerEnd()" style="width:100%; background:#400; color:#f00; border:1px solid #f00; padding:15px; margin-top:30px; cursor:pointer; font-weight:bold;">抹除存取紀錄</button>`;
+            // 打字完成，加入印章和按鈕
+            document.getElementById("report-box").innerHTML = text.replace(/\n/g, '<br>') + 
+            `<br><div style="text-align:right"><div class="bottom-stamp">TOP SECRET</div></div>` +
+            `<button onclick="triggerEnd()" style="width:100%; background:rgba(100,0,0,0.2); color:#f00; border:1px solid #f00; padding:15px; margin-top:30px; cursor:pointer; font-weight:bold; letter-spacing:2px;">抹除存取紀錄</button>`;
         }
     }
 
@@ -165,7 +177,7 @@
 
     function triggerDeath(reason) {
         document.body.style.animation = "dead-shake 0.1s infinite";
-        document.body.innerHTML = `<div style="color:#f00; font-size:3rem; font-weight:bold; letter-spacing:10px;">TERMINATED</div>`;
+        document.body.innerHTML = `<div style="color:#f00; font-size:3rem; font-weight:bold; letter-spacing:10px; text-shadow:0 0 20px #f00;">TERMINATED</div>`;
         setTimeout(() => { location.reload(); }, 3000);
     }
 
