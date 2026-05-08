@@ -56,14 +56,14 @@
         .loader-bar { width: 250px; height: 3px; background: #300; position: relative; }
         .loader-fill { position: absolute; left: 0; top: 0; height: 100%; background: #f00; width: 0%; transition: width 0.8s linear; }
 
-        /* 報告書 */
+        /* 報告 */
         .evidence-folder {
             width: 95%; max-width: 700px; max-height: 85vh; background: rgba(10, 0, 0, 0.95);
             border: 1px solid #800; color: #d33; padding: 30px; overflow-y: auto; text-align: left;
         }
         .label { color: #f00; font-weight: bold; border-left: 4px solid #f00; padding-left: 12px; margin-top: 20px; display: block; }
 
-        /* 紅色崩潰閃爍 */
+        /* 紅色崩潰 */
         @keyframes strobeRed { 0% { background-color: #000; } 50% { background-color: #f00; } 100% { background-color: #000; } }
         .red-death-active { animation: strobeRed 0.03s infinite steps(1) !important; }
 
@@ -146,7 +146,9 @@
 
         window.onload = () => {
             const txt = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室的保險箱嗎？";
-            typeWriter(txt, 0, 'intro-text', () => { document.getElementById('intro-btns').style.opacity = "1"; });
+            typeWriter(txt, 0, 'intro-text', () => { 
+                document.getElementById('intro-btns').style.opacity = "1"; 
+            });
         };
 
         function typeWriter(text, i, targetId, callback) {
@@ -156,18 +158,23 @@
             } else if (callback) callback();
         }
 
-        // 啟動終端機
+        // 強制切換螢幕函式
+        function showScreen(id) {
+            const screens = ['sc-intro', 'sc-terminal', 'sc-loading', 'sc-report'];
+            screens.forEach(s => {
+                document.getElementById(s).style.display = (s === id) ? 'flex' : 'none';
+            });
+        }
+
         function startTerminal() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('sc-terminal').classList.add('active');
+            showScreen('sc-terminal');
             updateDisplay();
         }
 
-        // 亂碼效果
         setInterval(() => {
             const noise = document.getElementById('noise-layer');
             if (noise) {
-                const chars = "ABCDEF0123456789!@#$%^&*()_+-=[]{}|;:,.<>?/✕ø∑†‡";
+                const chars = "ABCDEF0123456789!@#$%^&*()_+-=[]{}|;:,.<>?/✕ø";
                 let res = ""; for(let i=0; i<20; i++) res += chars[Math.floor(Math.random()*chars.length)];
                 noise.innerText = res;
             }
@@ -200,22 +207,22 @@
         }
 
         function runTransition() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('sc-loading').classList.add('active');
+            showScreen('sc-loading');
             const fill = document.getElementById('load-fill');
             fill.style.width = '0%';
+            
+            // 手動觸發進度條
             setTimeout(() => { fill.style.width = '100%'; }, 50);
 
             setTimeout(() => {
                 if (currentStage < 3) {
-                    currentStage++; inputStr = "";
+                    currentStage++;
+                    inputStr = "";
                     document.getElementById('gate-title').innerText = stageTitles[currentStage];
-                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                    document.getElementById('sc-terminal').classList.add('active');
+                    showScreen('sc-terminal');
                     updateDisplay();
                 } else {
-                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                    document.getElementById('sc-report').classList.add('active');
+                    showScreen('sc-report');
                 }
             }, 1200);
         }
