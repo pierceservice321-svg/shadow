@@ -23,11 +23,9 @@
         }
         #intro-text { 
             max-width: 600px; width: 90%; color: #c33; font-size: 1.05rem; line-height: 2.2; 
-            text-shadow: 0 0 8px rgba(255,0,0,0.4); min-height: 350px; text-align: left;
-            border-left: 2px solid #500; padding-left: 20px;
+            min-height: 350px; text-align: left; border-left: 2px solid #500; padding-left: 20px;
         }
         #intro-btn-container { display: flex; gap: 20px; margin-top: 40px; opacity: 0; visibility: hidden; transition: opacity 1.5s ease-in; }
-
         .btn { background: none; border: 1px solid #f00; color: #f00; padding: 12px 40px; font-size: 1.1rem; cursor: pointer; transition: 0.3s; letter-spacing: 4px; font-weight: bold; outline: none; }
         .btn:hover { background: #f00; color: #000; }
 
@@ -40,69 +38,38 @@
         /* 解密動畫層 */
         #decrypt-overlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0a0000; z-index: 50; 
-            flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            background: #0a0000; z-index: 50; flex-direction: column; justify-content: center; align-items: center;
         }
-        .decrypt-status { width: 100%; color: #f00; font-family: monospace; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 20px; animation: blink 0.5s infinite alternate; }
-        .progress-bar { width: 75%; height: 4px; background: #200; border-radius: 2px; overflow: hidden; margin: 0 auto; }
-        .progress-fill { width: 0%; height: 100%; background: #f00; box-shadow: 0 0 10px #f00; transition: width 0.1s linear; }
+        .decrypt-status { color: #f00; font-family: monospace; font-size: 0.9rem; margin-bottom: 20px; animation: blink 0.5s infinite alternate; }
+        .progress-bar { width: 75%; height: 4px; background: #200; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: #f00; transition: width 0.1s linear; }
 
-        /* 階段標題與亂碼 */
-        .gate-info { text-align: center; margin-bottom: 15px; }
-        #current-gate-title { 
-            color: #f00; font-weight: bold; letter-spacing: 2px; margin-bottom: 15px; 
-            font-size: 1.1rem; font-family: 'Special Elite', cursive; 
-            border: 1px solid #700; padding: 8px 15px; display: inline-block;
-            background: rgba(60, 0, 0, 0.2); text-shadow: 0 0 5px #f00;
-        }
-        #glitch-display { 
-            color: #b00; font-size: 0.75rem; line-height: 1.4; letter-spacing: 1.5px; 
-            margin: 5px 0; min-height: 4.5em; font-family: monospace; word-break: break-all; opacity: 0.8;
-        }
-
-        #display { background: rgba(20, 0, 0, 0.6); border: 1px solid #500; color: #f00; height: 75px; line-height: 75px; text-align: center; font-size: 2.2rem; letter-spacing: 12px; margin-bottom: 20px; font-family: 'Special Elite', cursive; box-shadow: inset 0 0 20px #400; }
+        /* 介面細節 */
+        #current-gate-title { color: #f00; font-weight: bold; letter-spacing: 2px; margin-bottom: 15px; font-size: 1.1rem; font-family: 'Special Elite', cursive; border: 1px solid #700; padding: 8px 15px; background: rgba(60, 0, 0, 0.2); }
+        #glitch-display { color: #b00; font-size: 0.75rem; line-height: 1.4; min-height: 4.5em; font-family: monospace; word-break: break-all; opacity: 0.8; }
+        #display { background: rgba(20, 0, 0, 0.6); border: 1px solid #500; color: #f00; height: 75px; line-height: 75px; text-align: center; font-size: 2.2rem; margin-bottom: 20px; font-family: 'Special Elite', cursive; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; border-radius: 2px; outline: none; }
+        .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; outline: none; }
 
-        /* 報告書樣式 */
+        /* 報告書 */
         #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
-        .evidence-folder { position: relative; width: 95%; max-width: 620px; padding: 40px 30px; color: #d22; max-height: 90vh; overflow-y: auto; border: 1px solid #600; line-height: 1.8; background: #0a0000; box-shadow: inset 0 0 50px #000; }
-        .report-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #700; padding-bottom: 15px; }
-        .report-title { font-size: 1.25rem; color: #f00; letter-spacing: 3px; font-weight: bold; margin: 5px 0; }
-        .report-paragraph { margin-bottom: 25px; text-align: justify; }
+        .evidence-folder { width: 95%; max-width: 620px; padding: 40px 30px; color: #d22; background: #0a0000; border: 1px solid #600; line-height: 1.8; overflow-y: auto; max-height: 90vh; }
         .report-label { color: #f00; font-weight: bold; display: block; margin-bottom: 4px; border-left: 3px solid #f00; padding-left: 8px; }
-        .report-footer { margin-top: 40px; border-top: 1px solid #400; padding-top: 20px; font-weight: bold; color: #a00; font-size: 0.95rem; }
 
-        /* 成功結局 */
-        #success-ending { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 100001; flex-direction: column; justify-content: center; align-items: center; 
-            text-align: center; 
-        }
-        .fear-text-sub { 
-            color: #fff; font-family: 'Special Elite', cursive; font-size: 2.2rem; letter-spacing: 12px;
-            font-weight: bold;
-        }
+        /* 結局 */
+        #success-ending { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10001; flex-direction: column; justify-content: center; align-items: center; }
+        .fear-text-sub { color: #fff; font-family: 'Special Elite', cursive; font-size: 2.2rem; letter-spacing: 12px; font-weight: bold; }
 
-        /* NO按鈕觸發的洪水模式 */
-        #no-death-screen { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 100000; overflow-y: hidden; padding: 10px;
-        }
-        #flood-content { 
-            color: #f00; font-family: 'Special Elite', cursive; font-weight: bold; 
-            word-break: break-all; line-height: 1.2;
-        }
+        /* 洪水模式 (NO鍵) */
+        #no-death-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100000; overflow: hidden; }
+        #flood-content { color: #f00; font-family: 'Special Elite', cursive; word-break: break-all; }
 
-        /* --- 關鍵修正：輸入三次錯誤的死亡結局畫面 --- */
+        /* 死亡結局 (DEAD) */
         #death-ending { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 100002; overflow: hidden; padding: 10px;
+            background: #000; z-index: 200000; overflow: hidden; padding: 5px;
         }
-        #death-content { 
-            color: #f00; font-family: monospace; font-weight: bold; 
-            word-break: break-all; line-height: 1.0;
-        }
+        #death-content { color: #f00; font-family: 'Special Elite', cursive; word-break: break-all; line-height: 1.1; }
 
         @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
     </style>
@@ -121,16 +88,12 @@
     <div id="decrypt-overlay">
         <div class="decrypt-status" id="decrypt-msg">INITIALIZING...</div>
         <div class="progress-bar"><div class="progress-fill" id="p-fill"></div></div>
-        <div id="decrypt-hex" style="font-family:monospace; font-size:0.6rem; color:#600; margin-top:15px;"></div>
     </div>
-
     <div class="gate-info">
         <div id="current-gate-title">STAGE 01: 生還者</div>
         <div id="glitch-display"></div>
     </div>
-    
     <div id="display">-</div>
-    
     <div class="keypad">
         <button class="key" onclick="press('1')">1</button><button class="key" onclick="press('2')">2</button><button class="key" onclick="press('3')">3</button>
         <button class="key" onclick="press('4')">4</button><button class="key" onclick="press('5')">5</button><button class="key" onclick="press('6')">6</button>
@@ -143,33 +106,13 @@
 
 <div id="secret-overlay">
     <div class="evidence-folder">
-        <div class="report-header">
-            <div class="report-title">【聖瑪利亞孤兒院St. Maria's Orphanage】</div>
-            <div class="report-title">【特殊個案追蹤報告】</div>
-        </div>
-        <div class="report-body">
-            <div class="report-paragraph">
-                <span class="report-label">受測者：</span>
-                Luca Veil 來自Veil家族的獨生子。（原生家族已於2004年火災中全員喪生）
-            </div>
-            <div class="report-paragraph">
-                <span class="report-label">衝突紀錄：</span>
-                1月12日，受測者遭到院內其餘五名兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致雙手指關節✕✕。
-            </div>
-            <div class="report-paragraph">
-                <span class="report-label">語言霸凌觀測：</span>
-                院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人情感隔離能力，他安靜地坐在角落，用那雙綠眸注視著霸凌者，似是在觀察某種即將腐爛的標本。
-            </div>
-            <div class="report-paragraph">
-                <span class="report-label">冷藏室事件：</span>
-                為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣，他從未試圖求救。
-            </div>
-            <div class="report-footer">
-                這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。
-            </div>
-        </div>
+        <h2 style="text-align:center; color:#f00;">CLASSIFIED REPORT</h2>
+        <div class="report-paragraph"><span class="report-label">受測者：</span>Luca Veil (原生家族已於2004年喪生)</div>
+        <div class="report-paragraph"><span class="report-label">衝突紀錄：</span>1月12日遭到圍堵，雙手護住「V」字金屬扣導致關節✕✕。</div>
+        <div class="report-paragraph"><span class="report-label">語言霸凌觀測：</span>被譏諷為「雜種」，受測者表現出極度情感隔離，以綠眸注視霸凌者。</div>
+        <div class="report-paragraph"><span class="report-label">冷藏室事件：</span>深夜被關入食品冷藏室四小時，全身凍紫仍未求救。</div>
         <div style="margin-top:40px;">
-            <button onclick="triggerSuccessEnd()" style="width:100%; background:#f00; color:#000; border:none; padding:18px; cursor:pointer; letter-spacing:5px; font-weight:bold;">抹除存取紀錄 (PURGE)</button>
+            <button onclick="triggerSuccessEnd()" style="width:100%; background:#f00; color:#000; border:none; padding:18px; cursor:pointer; font-weight:bold; letter-spacing:5px;">PURGE RECORDS</button>
         </div>
     </div>
 </div>
@@ -178,30 +121,19 @@
     <div class="fear-text-sub">YOU DID WELL. NOW, RUN.</div>
 </div>
 
-<div id="no-death-screen">
-    <div id="flood-content"></div>
-</div>
-
-<div id="death-ending">
-    <div id="death-content"></div>
-</div>
+<div id="no-death-screen"><div id="flood-content"></div></div>
+<div id="death-ending"><div id="death-content"></div></div>
 
 <script>
     "use strict";
     let currentMod = 1; 
     let inputStr = ""; 
-    let errorCount = 0; // 錯誤計數器
+    let errorCount = 0; 
     let glitchInterval;
 
     const gateTitles = { 1: "STAGE 01: 生還者", 2: "STAGE 02: 耐受測試", 3: "STAGE 03: 捏造血緣" };
     const answers = { 1: "1", 2: "4", 3: "12" };
-    const decryptMsgs = { 1: "ACCESSING...", 2: "EXTRACTING...", 3: "AUTHORIZING..." };
-    const decryptTimes = { 1: 1500, 2: 3000, 3: 5000 }; 
-    const glitchChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+=-[]{}|;:,.<>?";
-
-    // NO觸發的詞庫
-    const warnings = ["RUN", "HURRY UP", "LOOK BEHIND YOU", "HIDE", "WATCH OUT", "DONT BREATHE", "HE IS COMING", "STAY QUIET", "TOO LATE"];
-
+    const warnings = ["RUN", "HURRY UP", "LOOK BEHIND YOU", "HIDE", "WATCH OUT", "HE IS COMING", "TOO LATE"];
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室的保險箱嗎？";
 
     function typeWriter(text, i, targetId, callback) {
@@ -224,54 +156,33 @@
         clearInterval(glitchInterval);
         glitchInterval = setInterval(() => {
             let glitched = "";
-            for(let i=0; i<150; i++) { glitched += glitchChars[Math.floor(Math.random() * glitchChars.length)]; }
+            for(let i=0; i<150; i++) { glitched += String.fromCharCode(33 + Math.random() * 94); }
             target.innerText = glitched;
         }, 50);
     }
 
-    function startGame() { 
-        document.getElementById('intro-screen').style.display = 'none'; 
-        document.getElementById('main-terminal').style.display = 'flex'; 
-        startGlitchEffect();
-    }
-
-    function press(n) { 
-        let maxChars = (currentMod === 3) ? 2 : 1; 
-        if (inputStr.length < maxChars) { inputStr += n; document.getElementById('display').innerText = inputStr; } 
-    }
-
-    function clearD() { inputStr = ""; document.getElementById('display').innerText = (currentMod === 3) ? "--" : "-"; }
+    function startGame() { document.getElementById('intro-screen').style.display = 'none'; document.getElementById('main-terminal').style.display = 'flex'; startGlitchEffect(); }
+    function press(n) { if (inputStr.length < (currentMod === 3 ? 2 : 1)) { inputStr += n; document.getElementById('display').innerText = inputStr; } }
+    function clearD() { inputStr = ""; document.getElementById('display').innerText = "-"; }
     
     function submit() {
-        if (inputStr === answers[currentMod]) { 
-            // errorCount = 0; // 成功後不重置錯誤，增加難度（若要重置請取消註解）
-            runDecryption(); 
-        } 
+        if (inputStr === answers[currentMod]) { runDecryption(); } 
         else { 
             errorCount++; 
-            // 關鍵修正：判斷錯誤次數
-            if (errorCount >= 3) { 
-                triggerDeathEnding(); // 觸發死亡結局
-            } else { 
-                document.getElementById('display').innerText = "ERR"; 
-                setTimeout(clearD, 600); 
-            } 
+            if (errorCount >= 3) { triggerDeathEnding(); } // 核心修正：觸發死亡
+            else { document.getElementById('display').innerText = "ERR"; setTimeout(clearD, 600); }
         }
     }
 
     function runDecryption() {
         const overlay = document.getElementById('decrypt-overlay');
         const fill = document.getElementById('p-fill');
-        const duration = decryptTimes[currentMod];
+        const duration = [0, 1500, 3000, 5000][currentMod];
         overlay.style.display = 'flex';
-        document.getElementById('decrypt-msg').innerText = decryptMsgs[currentMod];
-        
         let startTime = performance.now();
         function update(currentTime) {
-            let elapsed = currentTime - startTime;
-            let progress = Math.min(elapsed / duration, 1);
+            let progress = Math.min((currentTime - startTime) / duration, 1);
             fill.style.width = (progress * 100) + "%";
-            document.getElementById('decrypt-hex').innerText = "0x" + Math.random().toString(16).substring(2, 10).toUpperCase();
             if (progress < 1) { requestAnimationFrame(update); } 
             else {
                 setTimeout(() => {
@@ -284,48 +195,30 @@
         requestAnimationFrame(update);
     }
 
-    function triggerSuccessEnd() { 
-        document.getElementById('secret-overlay').style.display = 'none'; 
-        document.getElementById('success-ending').style.display = 'flex'; 
-    }
+    function triggerSuccessEnd() { document.getElementById('secret-overlay').style.display = 'none'; document.getElementById('success-ending').style.display = 'flex'; }
     
     function triggerFloodTypewriter() { 
         document.getElementById('intro-screen').style.display = 'none'; 
-        const screen = document.getElementById('no-death-screen');
-        const content = document.getElementById('flood-content');
-        screen.style.display = "block"; 
-        
+        document.getElementById('no-death-screen').style.display = "block"; 
         setInterval(() => { 
             const word = warnings[Math.floor(Math.random() * warnings.length)];
-            const fontSize = Math.floor(Math.random() * (40 - 14) + 14) + "px";
-            const opacity = Math.random() * (1 - 0.5) + 0.5;
-            content.innerHTML += `<span style="font-size:${fontSize}; opacity:${opacity}; margin-right:10px;">${word}</span> `; 
+            const fontSize = Math.floor(Math.random() * 26 + 14) + "px";
+            document.getElementById('flood-content').innerHTML += `<span style="font-size:${fontSize}; margin-right:10px;">${word}</span> `; 
             window.scrollTo(0, document.body.scrollHeight);
         }, 30); 
     }
 
-    // --- 關鍵修正：觸發死亡結局的函數 ---
+    // --- 核心修正：觸發死亡結局 ---
     function triggerDeathEnding() {
-        // 隱藏所有主要介面
-        document.getElementById('intro-screen').style.display = 'none';
         document.getElementById('main-terminal').style.display = 'none';
-        document.getElementById('secret-overlay').style.display = 'none';
-        
-        const screen = document.getElementById('death-ending');
+        document.getElementById('death-ending').style.display = "block";
         const content = document.getElementById('death-content');
-        screen.style.display = "block"; // 顯示死亡畫面
-        
-        // 啟動瘋狂的 "DEAD" 洪水動畫
         setInterval(() => { 
-            const word = "DEAD";
-            // 隨機字體大小、透明度和暗紅/鮮紅顏色
-            const fontSize = Math.floor(Math.random() * (48 - 16) + 16) + "px";
-            const opacity = Math.random() * (1 - 0.4) + 0.4;
+            const fontSize = Math.floor(Math.random() * 32 + 16) + "px";
             const color = Math.random() > 0.5 ? "#f00" : "#800";
-            content.innerHTML += `<span style="font-size:${fontSize}; opacity:${opacity}; color:${color}; margin-right:8px;">${word}</span> `; 
-            // 雖然設定不滾動，但這能確保內容填滿畫面
+            content.innerHTML += `<span style="font-size:${fontSize}; color:${color}; margin-right:8px;">DEAD</span> `; 
             window.scrollTo(0, document.body.scrollHeight);
-        }, 20); // 極高的刷新頻率
+        }, 20);
     }
 </script>
 </body>
