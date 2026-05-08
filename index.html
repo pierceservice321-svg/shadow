@@ -1,246 +1,254 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TERMINAL | ST. MARIA</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;700&family=Cormorant+Unicase:wght@700&display=swap');
 
-<title>TERMINAL | ST. MARIA</title>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        body { background: #000; color: #900; font-family: 'Noto Serif TC', serif; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; }
 
-<style>
-body{
-    margin:0;
-    background:#000;
-    color:#900;
-    font-family:"Noto Serif TC";
-    overflow:hidden;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-}
+        /* 全域掃描線 (CRT) */
+        .crt::before {
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 1000; background-size: 100% 3px, 3px 100%; pointer-events: none;
+        }
 
-.screen{display:none;}
-.screen.active{display:block;}
+        .container { width: 100%; max-width: 1280px; height: 100vh; position: relative; display: flex; justify-content: center; align-items: center; }
 
-.box{
-    width:90%;
-    max-width:700px;
-    padding:20px;
-    border:1px solid #700;
-    background:rgba(10,0,0,0.95);
-    color:#c33;
-    line-height:1.8;
-    font-size:14px;
-}
+        /* 畫面層級 */
+        .screen { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; z-index: 10; }
+        .screen.active { display: flex; }
 
-.btn{
-    margin-top:20px;
-    padding:10px 25px;
-    border:2px solid #f00;
-    background:transparent;
-    color:#f00;
-    cursor:pointer;
-}
+        /* 文字樣式 */
+        .typewriter { max-width: 800px; color: #c33; font-size: 1.1rem; line-height: 1.8; border-left: 3px solid #600; padding-left: 20px; text-align: left; }
 
-.btn:active{transform:scale(.95);}
+        /* 按鈕結構 */
+        .btn-group { display: flex; gap: 30px; margin-top: 40px; opacity: 0; transition: opacity 1s easing-in; }
+        .btn {
+            background: none; border: 2px solid #f00; color: #f00; padding: 12px 40px;
+            font-size: 1.2rem; cursor: pointer; font-family: 'Special Elite'; font-weight: bold;
+            letter-spacing: 3px; z-index: 50; position: relative; transition: 0.2s;
+        }
+        .btn:hover { background: #f00; color: #000; box-shadow: 0 0 15px #f00; }
 
-.keypad button{
-    width:60px;
-    height:60px;
-    margin:5px;
-    background:#200;
-    color:#f33;
-    border:1px solid #700;
-    font-size:18px;
-}
+        /* 終端機 UI */
+        .t-box { width: 95%; max-width: 400px; padding: 25px; background: rgba(10, 0, 0, 0.95); border: 1px solid #800; text-align: center; }
+        .t-title { font-family: 'Special Elite'; color: #f00; font-size: 1.3rem; margin-bottom: 5px; }
+        .noise { font-family: 'Courier New', monospace; font-size: 0.8rem; color: #500; height: 1.2rem; margin-bottom: 15px; letter-spacing: 2px; }
+        .t-display {
+            background: rgba(30, 0, 0, 0.9); border: 1px solid #700; color: #f00; height: 70px;
+            line-height: 70px; font-size: 2.5rem; margin-bottom: 20px; font-family: 'Special Elite'; letter-spacing: 5px;
+        }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .key { background: rgba(50, 0, 0, 0.5); border: 1px solid #800; color: #b66; padding: 15px 0; font-size: 1.3rem; font-family: 'Special Elite'; cursor: pointer; }
 
-#display{
-    font-size:30px;
-    text-align:center;
-    margin:15px 0;
-    color:#f00;
-}
+        /* 過場 */
+        .loading-bar { width: 200px; height: 3px; background: #300; margin-top: 20px; position: relative; }
+        .loading-fill { position: absolute; left: 0; top: 0; height: 100%; background: #f00; width: 0%; }
 
-#dead{
-    position:fixed;
-    inset:0;
-    background:#000;
-    color:#fff;
-    display:none;
-    justify-content:center;
-    align-items:center;
-    font-size:80px;
-    font-family:monospace;
-    animation:flash .1s infinite;
-}
+        /* 報告檔案 */
+        .report-box { width: 95%; max-width: 650px; height: 80vh; background: rgba(5, 0, 0, 0.98); border: 1px solid #800; color: #d33; padding: 25px; overflow-y: auto; text-align: left; line-height: 2; }
+        .tag { color: #f00; font-weight: bold; border-left: 3px solid #f00; padding-left: 10px; margin-top: 20px; display: block; }
 
-@keyframes flash{
-    0%{background:#000;}
-    50%{background:#500;}
-    100%{background:#000;}
-}
-</style>
+        /* 系統崩潰 (黑色數據洪水) */
+        #crash-screen { position: fixed; inset: 0; z-index: 99999; display: none; background: #000; overflow: hidden; }
+        .glitch-txt { position: absolute; font-family: 'Cormorant Unicase'; font-weight: bold; color: rgba(255, 255, 255, 0.3); pointer-events: none; opacity: 0.8; }
+        .rebooting { position: absolute; bottom: 30px; right: 30px; font-family: 'Special Elite'; color: #f00; font-size: 1.5rem; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
+
+        /* 成功通關結局 (YOU DID WELL.) */
+        #end-screen { 
+            position: fixed; inset: 0; z-index: 100000; display: none; background: #000; 
+            flex-direction: column; justify-content: center; align-items: center; padding: 40px; 
+        }
+        .end-text {
+            font-family: 'Special Elite'; color: #fff; font-size: 8vw; text-align: center;
+            line-height: 1.2; white-space: nowrap; text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            opacity: 0; /* JS 控制出現 */
+        }
+
+        /* 泛白閃爍 */
+        @keyframes whiteFlash { 0% { background: #000; } 50% { background: #fff; } 100% { background: #fff; } }
+        .ending-active { animation: whiteFlash 0.5s forwards ease-in; }
+    </style>
 </head>
+<body class="crt">
 
-<body>
+    <div class="container">
+        
+        <div class="screen active" id="S1">
+            <div class="typewriter" id="T1"></div>
+            <div class="btn-group" id="B1">
+                <button class="btn" onclick="go('S2')">YES</button>
+                <button class="btn" style="border-color:#444; color:#555;" onclick="crash()">NO</button>
+            </div>
+        </div>
 
-<!-- AUDIO -->
-<audio id="fear" src="fear.mp3"></audio>
-<audio id="static" src="static.mp3"></audio>
-<audio id="death" src="death.mp3"></audio>
-<audio id="beep" src="beep.mp3"></audio>
-<audio id="ring" src="ring.mp3"></audio>
+        <div class="screen" id="S2">
+            <div class="t-box">
+                <div class="t-title" id="ST-TITLE">STAGE 01: 生還者</div>
+                <div class="noise" id="NOISE">---</div>
+                <div class="t-display" id="DISP">-</div>
+                <div class="keypad">
+                    <button class="key" onclick="k('1')">1</button><button class="key" onclick="k('2')">2</button><button class="key" onclick="k('3')">3</button>
+                    <button class="key" onclick="k('4')">4</button><button class="key" onclick="k('5')">5</button><button class="key" onclick="k('6')">6</button>
+                    <button class="key" onclick="k('7')">7</button><button class="key" onclick="k('8')">8</button><button class="key" onclick="k('9')">9</button>
+                    <button class="key" style="color:#f00;" onclick="c()">CLR</button>
+                    <button class="key" onclick="k('0')">0</button>
+                    <button class="key" style="color:#f00;" onclick="e()">EXE</button>
+                </div>
+            </div>
+        </div>
 
-<!-- INTRO -->
-<div id="s1" class="screen active">
-<div class="box">
-2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。<br><br>
-縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。<br><br>
-他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。<br><br>
-被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。<br><br>
-你確定要嘗試打開地下室上鎖的保險箱嗎？
+        <div class="screen" id="S3">
+            <div style="font-family:'Special Elite'; color:#f00;">DECRYPTING...</div>
+            <div class="loading-bar"><div class="loading-fill" id="FILL"></div></div>
+        </div>
 
-<button class="btn" onclick="start()">YES</button>
-<button class="btn" onclick="no()">NO</button>
-</div>
-</div>
+        <div class="screen" id="S4">
+            <div class="report-box">
+                <div style="text-align:center; color:#f00; font-family:'Special Elite'; font-size:1.5rem; margin-bottom:20px;">機密檔案：CASE #0412</div>
+                <span class="tag">【聖瑪利亞孤兒院 St. Maria's Orphanage】</span>
+                <span class="tag">【特殊個案追蹤報告】</span>
+                受測者：Luca Veil<br>來自Veil家族的獨生子。（原生家族已於2004年火災中全員喪生）
+                <span class="tag">衝突紀錄：</span>
+                1月12日，受測者遭到院內其餘五名兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致雙手指關節✕✕。
+                <span class="tag">語言霸凌觀測：</span>
+                院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙綠眸注視著霸凌者，似是在觀察某種即將腐爛的標本。
+                <span class="tag">冷藏室事件：</span>
+                為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣，他從未試圖求救。
+                <p style="border-top:1px dashed #600; margin-top:20px; padding-top:15px; font-style:italic; color:#944;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
+                <button class="btn" style="width:100%; margin-top:30px;" onclick="finalRun()">PURGE EXIT</button>
+            </div>
+        </div>
+    </div>
 
-<!-- GAME -->
-<div id="s2" class="screen">
-<div class="box">
-STAGE 01<br>
-<div id="display">-</div>
+    <div id="end-screen">
+        <div class="end-text" id="final-t1">YOU DID WELL.</div>
+        <div class="end-text" style="font-size: 10vw; text-shadow: 0 0 10px #f00;" id="final-t2">NOW RUN.</div>
+    </div>
 
-<div class="keypad">
-<button onclick="input(1)">1</button>
-<button onclick="input(2)">2</button>
-<button onclick="input(3)">3</button>
-<button onclick="input(4)">4</button>
-<button onclick="input(5)">5</button>
-<button onclick="input(6)">6</button>
-<button onclick="input(7)">7</button>
-<button onclick="input(8)">8</button>
-<button onclick="input(9)">9</button>
-<button onclick="clearI()">CLR</button>
-<button onclick="input(0)">0</button>
-<button onclick="check()">OK</button>
-</div>
-</div>
-</div>
+    <div id="crash-screen">
+        <div class="rebooting">REBOOTING...</div>
+    </div>
 
-<!-- DEAD -->
-<div id="dead">
-NOW RUN.
-</div>
+    <script>
+        "use strict";
+        let stage = 1; let input = ""; let err = 0;
+        const ans = { 1: "1", 2: "4", 3: "12" };
+        const titles = { 1: "STAGE 01: 生還者", 2: "STAGE 02: 耐受測試", 3: "STAGE 03: 捏造血緣" };
 
-<script>
+        // 打字機
+        const txt = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料皆顯示無人生還，但有位被隱藏在灰燼中的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要嘗試打開地下室的保險箱嗎？";
+        let idx = 0;
+        function type() {
+            if (idx < txt.length) {
+                document.getElementById('T1').innerHTML += txt[idx] === '\n' ? '<br>' : txt[idx];
+                idx++;
+                setTimeout(type, (txt[idx-1] === '。' || txt[idx-1] === '\n') ? 400 : 40);
+            } else {
+                document.getElementById('B1').style.opacity = "1";
+            }
+        }
+        window.onload = type;
 
-let ans={1:"1",2:"4",3:"12"};
-let stage=1;
-let inputStr="";
-let err=0;
+        // 亂碼效果 (0.07s)
+        setInterval(() => {
+            const n = document.getElementById('NOISE');
+            if(n) {
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789✕†∑ø";
+                let s = ""; for(let i=0; i<25; i++) s += chars[Math.floor(Math.random()*chars.length)];
+                n.innerText = s;
+            }
+        }, 70);
 
-function start(){
-    document.getElementById("s1").classList.remove("active");
-    document.getElementById("s2").classList.add("active");
-}
-
-function no(){
-    play("ring",0.6);
-    setTimeout(die,600);
-}
-
-function input(n){
-    play("beep",0.2);
-    inputStr+=n;
-    document.getElementById("display").innerText=inputStr;
-}
-
-function clearI(){
-    inputStr="";
-    document.getElementById("display").innerText="-";
-}
-
-function check(){
-
-    if(inputStr===ans[stage]){
-
-        stage++;
-        inputStr="";
-
-        if(stage>3){
-            win();
-        }else{
-            document.getElementById("display").innerText="OK";
+        function go(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            input = ""; refresh();
         }
 
-    }else{
-
-        err++;
-
-        play("beep",0.4);
-
-        if(err===2){
-            play("static",0.4);
-            document.body.style.filter="contrast(2)";
-            setTimeout(()=>document.body.style.filter="",150);
+        function k(n) { let limit = (stage === 3) ? 2 : 1; if (input.length < limit) { input += n; refresh(); } }
+        function c() { input = ""; refresh(); }
+        function refresh() {
+            const d = document.getElementById('DISP');
+            if (stage === 3) d.innerText = input.length === 0 ? "--" : (input.length === 1 ? input + "-" : input);
+            else d.innerText = input === "" ? "-" : input;
         }
 
-        if(err>=3){
-            die();
+        function e() {
+            if (input === ans[stage]) {
+                go('S3');
+                let w = 0; let f = document.getElementById('FILL');
+                let timer = setInterval(() => {
+                    w += 10; f.style.width = w + '%';
+                    if (w >= 100) {
+                        clearInterval(timer);
+                        if (stage < 3) { stage++; document.getElementById('ST-TITLE').innerText = titles[stage]; go('S2'); }
+                        else { go('S4'); }
+                    }
+                }, 100);
+            } else {
+                err++;
+                if (err >= 3) crash();
+                else { document.getElementById('DISP').innerText = "ERR"; setTimeout(c, 600); }
+            }
         }
 
-        inputStr="";
-        document.getElementById("display").innerText="ERR";
-    }
-}
-
-function win(){
-    alert("ACCESS GRANTED");
-}
-
-function die(){
-
-    play("fear",0.8);
-
-    setTimeout(()=>play("static",0.7),400);
-    setTimeout(()=>play("death",0.9),900);
-
-    document.body.style.animation="shake .1s infinite";
-
-    let d=document.getElementById("dead");
-    d.style.display="flex";
-
-    let words=["VOID","RUN","WATCHING","HELP","ERROR"];
-
-    let i=setInterval(()=>{
-        let t=document.createElement("div");
-        t.style.position="absolute";
-        t.style.left=Math.random()*100+"%";
-        t.style.top=Math.random()*100+"%";
-        t.innerText=words[Math.floor(Math.random()*words.length)];
-        d.appendChild(t);
-
-        if(d.children.length>30){
-            d.removeChild(d.children[0]);
+        // --- 失敗結局 (NO或錯誤三次)：數據洪水與重啟 ---
+        function crash() {
+            document.getElementById('S1').style.display = "none";
+            document.getElementById('S2').style.display = "none";
+            const cs = document.getElementById('crash-screen');
+            cs.style.display = "block";
+            
+            // 亂碼洪水生成
+            setInterval(() => {
+                const words = ["DEAD", "VOID", "ERR", "✕✕✕", "FATAL", "HELP", "†", "SYSTEM_FAIL"];
+                const g = document.createElement('div');
+                g.className = 'glitch-txt';
+                g.style.left = Math.random()*90 + '%'; g.style.top = Math.random()*90 + '%';
+                g.style.fontSize = (Math.random()*12 + 4) + 'vw';
+                g.innerText = words[Math.floor(Math.random()*words.length)];
+                cs.appendChild(g);
+                if(cs.children.length > 40) cs.removeChild(cs.children[1]); // 不刪除 REBOOTING
+            }, 30);
+            
+            setTimeout(() => location.reload(), 8000); // 8秒後重啟
         }
-    },40);
 
-    setTimeout(()=>{
-        clearInterval(i);
-        location.reload();
-    },8000);
-}
+        // --- 成功結局 (YOU DID WELL. NOW RUN.) ---
+        function finalRun() {
+            // 1. 關閉報告書畫面，開啟結局畫面
+            document.getElementById('S4').style.display = "none";
+            document.getElementById('end-screen').style.display = "flex";
+            
+            // 2. 打字機效果緩慢打出 YOU DID WELL.
+            const t1 = document.getElementById('final-t1');
+            setTimeout(() => {
+                t1.style.opacity = 1; // 顯示
+            }, 1000); // 停頓一秒後出現
 
-function play(id,v){
-    let a=document.getElementById(id);
-    if(!a) return;
-    a.volume=v;
-    a.currentTime=0;
-    a.play().catch(()=>{});
-}
+            // 3. 停頓並打出 NOW RUN.
+            const t2 = document.getElementById('final-t2');
+            setTimeout(() => {
+                t2.style.opacity = 1;
+            }, 3500); // YOU DID WELL 出現後兩點五秒
 
-</script>
+            // 4. 最後泛白炸裂，重置系統
+            setTimeout(() => {
+                document.getElementById('end-screen').classList.add('ending-active');
+            }, 6000); // NOW RUN 出現後兩點五秒
 
+            setTimeout(() => {
+                location.reload(); // 泛白完成後重置
+            }, 7000);
+        }
+    </script>
 </body>
 </html>
