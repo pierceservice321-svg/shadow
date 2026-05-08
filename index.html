@@ -56,7 +56,7 @@
         .loader-bar { width: 250px; height: 3px; background: #300; position: relative; }
         .loader-fill { position: absolute; left: 0; top: 0; height: 100%; background: #f00; width: 0%; transition: width 0.8s linear; }
 
-        /* 報告 */
+        /* 報告書 */
         .evidence-folder {
             width: 95%; max-width: 700px; max-height: 85vh; background: rgba(10, 0, 0, 0.95);
             border: 1px solid #800; color: #d33; padding: 30px; overflow-y: auto; text-align: left;
@@ -69,7 +69,6 @@
 
         #failure-screen { position: fixed; inset: 0; z-index: 100000; display: none; overflow: hidden; background: #000; }
         
-        /* NOW RUN 字樣特效 */
         .now-run {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-family: 'Special Elite'; color: #fff; font-size: 15vw; white-space: nowrap;
@@ -92,7 +91,7 @@
         <div class="screen active" id="sc-intro">
             <div class="typewriter-content" id="intro-text"></div>
             <div class="btn-container" id="intro-btns">
-                <button class="btn" onclick="goToStage(1)">YES</button>
+                <button class="btn" onclick="startTerminal()">YES</button>
                 <button class="btn" style="border-color:#444; color:#666;" onclick="triggerFailure()">NO</button>
             </div>
         </div>
@@ -126,7 +125,7 @@
                 受測者：Luca Veil<br>來自Veil家族的獨生子。（原生家族已於2004年火災中全員喪生）
                 <span class="label">衝突紀錄：</span>
                 1月12日，受測者遭到院內其餘五名兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致雙手指關節✕✕。
-                <span class="label">語言霸靈觀測：</span>
+                <span class="label">語言霸凌觀測：</span>
                 院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙綠眸注視著霸凌者，似是在觀察某種即將腐爛的標本。
                 <span class="label">冷藏室事件：</span>
                 為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣，他從未試圖求救。
@@ -157,6 +156,14 @@
             } else if (callback) callback();
         }
 
+        // 啟動終端機
+        function startTerminal() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('sc-terminal').classList.add('active');
+            updateDisplay();
+        }
+
+        // 亂碼效果
         setInterval(() => {
             const noise = document.getElementById('noise-layer');
             if (noise) {
@@ -182,20 +189,34 @@
 
         function submit() {
             if (inputStr === answers[currentStage]) { runTransition(); }
-            else { errorCount++; if (errorCount >= 3) triggerFailure(); else { document.getElementById('display').innerText = "ERR"; setTimeout(clearD, 600); } }
+            else { 
+                errorCount++; 
+                if (errorCount >= 3) triggerFailure(); 
+                else { 
+                    document.getElementById('display').innerText = "ERR"; 
+                    setTimeout(clearD, 600); 
+                } 
+            }
         }
 
         function runTransition() {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('sc-loading').classList.add('active');
-            const fill = document.getElementById('load-fill'); fill.style.width = '100%';
+            const fill = document.getElementById('load-fill');
+            fill.style.width = '0%';
+            setTimeout(() => { fill.style.width = '100%'; }, 50);
+
             setTimeout(() => {
                 if (currentStage < 3) {
-                    currentStage++; inputStr = ""; fill.style.width = '0%';
+                    currentStage++; inputStr = "";
                     document.getElementById('gate-title').innerText = stageTitles[currentStage];
+                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                     document.getElementById('sc-terminal').classList.add('active');
                     updateDisplay();
-                } else { document.getElementById('sc-report').classList.add('active'); }
+                } else {
+                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                    document.getElementById('sc-report').classList.add('active');
+                }
             }, 1200);
         }
 
@@ -204,7 +225,6 @@
             screen.style.display = "block";
             screen.classList.add('red-death-active');
             
-            // 跳出 NOW RUN.
             const runTxt = document.createElement('div');
             runTxt.className = 'now-run';
             runTxt.innerText = "NOW RUN.";
