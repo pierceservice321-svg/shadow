@@ -2,172 +2,108 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>SECURE TERMINAL | Luka Veil Private Vault</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SECURE TERMINAL | Luca Veil</title>
     <style>
-        body { background-color: #050505; color: #d4af37; font-family: "Garamond", serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
-        .terminal-container { width: 400px; padding: 40px; background: #0a0a0a; border: 1px solid #222; box-shadow: 0 0 100px rgba(0,0,0,1); position: relative; }
-        .system-header { font-family: monospace; font-size: 0.7rem; color: #444; border-bottom: 1px solid #1a1a1a; padding-bottom: 10px; margin-bottom: 20px; letter-spacing: 2px; text-align: center; }
-        
-        h2 { font-weight: lighter; letter-spacing: 3px; text-align: center; margin-bottom: 20px; color: #8B4513; font-size: 1.2rem; }
-        
-        /* 顯示螢幕 */
-        #display {
-            background: #000; border: 1px solid #333; color: #fff;
-            height: 50px; line-height: 50px; text-align: center;
-            font-size: 1.8rem; letter-spacing: 10px; margin-bottom: 20px;
-            box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.1);
-        }
-
-        /* 數字鍵盤介面 */
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-        .key {
-            background: #111; border: 1px solid #333; color: #d4af37;
-            padding: 20px; font-size: 1.2rem; cursor: pointer; transition: 0.2s;
-            font-family: "Courier New", monospace;
-        }
-        .key:hover { background: #d4af37; color: #000; border-color: #fff; }
-        .key:active { transform: scale(0.95); background: #fff; }
-
-        /* 故事模組文字 */
-        .module { display: none; text-align: center; min-height: 100px; }
-        .module.active { display: block; animation: fadeIn 0.8s forwards; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .question { font-size: 0.95rem; color: #888; margin-bottom: 15px; line-height: 1.6; font-style: italic; }
-        
-        /* 失敗與鎖定 */
-        #glitch-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(139, 0, 0, 0.4); display: none; z-index: 1000; pointer-events: none; }
-        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(5px); } 50% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
-        .fail-shake { animation: shake 0.1s linear infinite; }
-        #status-msg { font-size: 0.75rem; color: #444; text-align: center; margin-top: 10px; }
-        #lockout-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; color: #ff3333; justify-content: center; align-items: center; z-index: 2000; font-family: monospace; flex-direction: column; text-align: center; }
-
-        /* 真相資料夾 */
-        #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; padding: 40px; justify-content: center; align-items: center; z-index: 100; }
-        .evidence-folder { width: 90%; max-width: 420px; background: #dccba6; color: #1a1a1a; padding: 30px; box-shadow: 0 0 50px rgba(0,0,0,0.9); transform: rotate(-1deg); }
+        body { background: #050505; color: #d4af37; font-family: "Garamond", serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        #intro-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 3000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; box-sizing: border-box; text-align: center; line-height: 2; }
+        #intro-text { max-width: 500px; color: #888; font-size: 1.05rem; margin-bottom: 40px; opacity: 0; transition: opacity 2.5s; letter-spacing: 1px; }
+        .terminal-container { width: 100%; max-width: 400px; padding: 20px; background: #0a0a0a; border: 1px solid #222; display: none; flex-direction: column; box-sizing: border-box; }
+        #display { background: #000; border: 1px solid #333; color: #fff; height: 60px; line-height: 60px; text-align: center; font-size: 2rem; letter-spacing: 15px; margin-bottom: 20px; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .key { background: #111; border: 1px solid #333; color: #d4af37; padding: 25px 0; font-size: 1.5rem; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .key:active { background: #d4af37; color: #000; }
+        #status-msg { font-size: 0.8rem; color: #444; text-align: center; margin-top: 15px; min-height: 1.2em; letter-spacing: 1px; }
+        #lockout-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; color: red; z-index: 4000; justify-content: center; align-items: center; flex-direction: column; text-align: center; font-family: monospace; }
+        #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
+        .evidence-folder { width: 100%; max-width: 400px; background: #dccba6; color: #1a1a1a; padding: 30px; max-height: 90vh; overflow-y: auto; box-shadow: 0 0 40px rgba(0,0,0,0.8); position: relative; }
+        .stamp { position: absolute; top: 20px; right: 20px; border: 3px solid #800; color: #800; padding: 5px; font-weight: bold; transform: rotate(15deg); opacity: 0.6; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-<div id="glitch-overlay"></div>
+<div id="intro-screen">
+    <div id="intro-text">
+        1992 年的雪夜，一場大火抹去了 Veil 的所有痕跡。<br><br>
+        傳聞在那場慘劇後，原本的家族成員中，<br>
+        竟然沒有任何一個人生還。<br>
+        那個活下來的孩子，為了學會如何服從規則，<br>
+        他在深處的冰庫裡被反鎖了整整四個小時。<br><br>
+        直到那年的十二號，他獲得了新的姓氏：Luciano。
+    </div>
+    <button onclick="startGame()" style="background:none; border:1px solid #333; color:#555; padding:10px 30px; cursor:pointer; font-family:serif; letter-spacing:2px; transition: 0.5s;">[ 進入地下室 ]</button>
+</div>
 
 <div id="lockout-screen">
-    <h1 style="letter-spacing: 10px;">ACCESS DENIED</h1>
-    <p>嘗試次數超過上限。系統已永久鎖定。</p>
-    <p>...身世真相已銷毀。</p>
+    <h1 style="letter-spacing: 5px;">ACCESS DENIED</h1>
+    <p>嘗試次數過多。關於 Luca 的過往已永久鎖定。</p>
 </div>
 
 <div class="terminal-container" id="main-terminal">
-    <div class="system-header">LUCIANO_VAULT_SYSTEM // SUBJECT: LUKA</div>
-    
-    <div id="module-container">
-        <div class="module active" id="mod1">
-            <h2>STEP 01: ORIGIN</h2>
-            <div class="question">「那場雪夜之後，被這群狼奪去的 Veil 成員，還剩下幾人？」</div>
-        </div>
-        <div class="module" id="mod2">
-            <h2>STEP 02: TRAUMA</h2>
-            <div class="question">「為了學會不哭，Luka 在孤兒院冷藏室被關了幾個小時？」</div>
-        </div>
-        <div class="module" id="mod3">
-            <h2>STEP 03: NAME</h2>
-            <div class="question">「Veil 徹底更名為 Luciano 的日子是幾號？」</div>
-        </div>
-    </div>
-
-    <div id="display">----</div>
-
+    <div style="font-family:monospace; font-size:0.7rem; color:#444; text-align:center; margin-bottom:10px; letter-spacing:1px;">VAULT_SYSTEM // SUBJECT: LUCA_VEIL</div>
+    <div id="mod-desc" style="text-align:center; margin-bottom:15px;"><p id="current-gate" style="color:#888; font-style:italic;">第一道門：關於「生還者」</p></div>
+    <div id="display">--</div>
     <div class="keypad">
-        <button class="key" onclick="press('1')">1</button>
-        <button class="key" onclick="press('2')">2</button>
-        <button class="key" onclick="press('3')">3</button>
-        <button class="key" onclick="press('4')">4</button>
-        <button class="key" onclick="press('5')">5</button>
-        <button class="key" onclick="press('6')">6</button>
-        <button class="key" onclick="press('7')">7</button>
-        <button class="key" onclick="press('8')">8</button>
-        <button class="key" onclick="press('9')">9</button>
-        <button class="key" style="color:#600" onclick="clearD()">C</button>
-        <button class="key" onclick="press('0')">0</button>
-        <button class="key" style="color:#060" onclick="submit()">E</button>
+        <button class="key" onclick="press('1')">1</button><button class="key" onclick="press('2')">2</button><button class="key" onclick="press('3')">3</button>
+        <button class="key" onclick="press('4')">4</button><button class="key" onclick="press('5')">5</button><button class="key" onclick="press('6')">6</button>
+        <button class="key" onclick="press('7')">7</button><button class="key" onclick="press('8')">8</button><button class="key" onclick="press('9')">9</button>
+        <button class="key" style="color:#600" onclick="clearD()">C</button><button class="key" onclick="press('0')">0</button><button class="key" style="color:#060" onclick="submit()">E</button>
     </div>
-
-    <div id="status-msg">等待輸入身分密鑰...</div>
+    <div id="status-msg">正在驗證身分協議...</div>
 </div>
 
 <div id="secret-overlay">
     <div class="evidence-folder">
-        <h2 style="border-bottom: 2px solid #000; padding-bottom: 10px;">身分鑑定報告 (1992-V)</h2>
-        <p><strong>[ 秘密結論 ]：</strong></p>
-        <p>Luka 的虹膜雖然呈現綠眸，但鳳眸眼型證明其生父為 Veil 家族首領。大哥 Killian 刻意隱瞞真相，將其作為棋子養大。</p>
-        <hr style="border: 0; border-top: 1px solid #888;">
-        <p style="font-size: 0.85rem; line-height: 1.5;">他在孤兒院遭受的語言霸凌與冷落，皆為 Killian 默許的「磨練」。這柄利刃，從不屬於 Luciano。</p>
-        <button onclick="location.reload()" style="width:100%; background:#000; color:#d4af37; border:none; padding:10px; margin-top:20px; cursor:pointer;">抹除存取紀錄</button>
+        <div class="stamp">極機密</div>
+        <h2 style="border-bottom:2px solid #000; padding-bottom: 10px; font-size: 1.1rem; margin-top: 0;">【聖瑪利亞孤兒院 - 特殊個案追蹤報告】</h2>
+        <div style="font-size: 0.95rem; line-height: 1.7; margin-top: 15px;">
+            <p><strong>受測者：</strong>Luca</p>
+            <p><strong>姓氏：</strong>不詳。</p>
+            <hr style="border: 0; border-top: 1px dashed #888;">
+            <p><strong>[ 衝突紀錄 ]</strong><br>
+            1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。</p>
+            <p><strong>[ 語言霸凌觀測 ]</strong><br>
+            院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
+            <p><strong>[ 冷藏室事件 ]</strong><br>
+            為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
+            <hr style="border: 0; border-top: 1px dashed #888;">
+            <p style="font-style: italic; color: #b22222; font-weight: bold;">
+                這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。
+            </p>
+        </div>
+        <button onclick="location.reload()" style="width:100%; background:#000; color:#d4af37; border:none; padding:15px; margin-top:20px; font-size: 1rem; cursor:pointer;">銷毀紀錄並撤離</button>
     </div>
 </div>
 
 <script>
-    let currentMod = 1;
-    let inputStr = "";
-    let failCount = 0;
+    window.onload = () => { setTimeout(() => { document.getElementById('intro-text').style.opacity = 1; }, 500); };
+    function startGame() { document.getElementById('intro-screen').style.display = 'none'; document.getElementById('main-terminal').style.display = 'flex'; }
+    let currentMod = 1; let inputStr = ""; let failCount = 0;
     const answers = { 1: "0", 2: "4", 3: "12" };
-
-    function press(num) {
-        if (inputStr.length < 2) {
-            inputStr += num;
-            updateDisplay();
-        }
-    }
-
-    function clearD() {
-        inputStr = "";
-        updateDisplay();
-    }
-
-    function updateDisplay() {
-        document.getElementById('display').innerText = inputStr.padEnd(currentMod === 3 ? 2 : 1, "-");
-    }
-
-    function triggerFail() {
-        failCount++;
-        const term = document.getElementById('main-terminal');
-        const overlay = document.getElementById('glitch-overlay');
-        
-        if (failCount >= 3) {
-            document.getElementById('lockout-screen').style.display = 'flex';
-            return;
-        }
-
-        term.classList.add('fail-shake');
-        overlay.style.display = 'block';
-        document.getElementById('status-msg').innerText = `存取違規！剩餘次數: ${3 - failCount}`;
-        document.getElementById('status-msg').style.color = "red";
-
-        setTimeout(() => {
-            term.classList.remove('fail-shake');
-            overlay.style.display = 'none';
-            clearD();
-        }, 500);
-    }
-
+    const gates = { 1: "第一道門：關於「生還者」", 2: "第二道門：關於「代價」", 3: "第三道門：關於「更名」" };
+    function press(n) { if (inputStr.length < 2) { inputStr += n; updateDisplay(); } }
+    function clearD() { inputStr = ""; updateDisplay(); }
+    function updateDisplay() { document.getElementById('display').innerText = inputStr || "--"; }
     function submit() {
-        if (inputStr === answers[currentMod]) {
-            document.getElementById('mod' + currentMod).classList.remove('active');
-            if (currentMod < 3) {
-                currentMod++;
-                document.getElementById('mod' + currentMod).classList.add('active');
-                document.getElementById('status-msg').innerText = `STEP 0${currentMod-1} 破解成功。`;
-                document.getElementById('status-msg').style.color = "#d4af37";
-                clearD();
+        if (inputStr === "") return;
+        const status = document.getElementById('status-msg');
+        status.innerText = "正在進行身分破解..."; status.style.color = "#d4af37";
+        setTimeout(() => {
+            if (inputStr === answers[currentMod]) {
+                if (currentMod < 3) {
+                    currentMod++; document.getElementById('current-gate').innerText = gates[currentMod];
+                    status.innerText = "驗證成功，權限提升。"; clearD();
+                } else {
+                    document.getElementById('main-terminal').style.display = 'none';
+                    document.getElementById('secret-overlay').style.display = 'flex';
+                }
             } else {
-                document.getElementById('main-terminal').style.display = 'none';
-                document.getElementById('secret-overlay').style.display = 'flex';
+                failCount++;
+                if (failCount >= 3) { document.getElementById('lockout-screen').style.display = 'flex'; }
+                else { status.innerText = `存取違規！剩餘嘗試次數: ${3 - failCount}`; status.style.color = "red"; clearD(); }
             }
-        } else {
-            triggerFail();
-        }
+        }, 1500);
     }
 </script>
-
 </body>
 </html>
