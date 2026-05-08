@@ -35,12 +35,13 @@
             border-left: 2px solid #500; padding-left: 25px;
         }
 
-        .choice-container { display: flex; gap: 20px; margin-top: 30px; opacity: 0; transition: 1.5s; }
+        /* 核心按鈕容器：確保 YES NO 會出現 */
+        .choice-container { display: flex; gap: 20px; margin-top: 30px; opacity: 0; visibility: hidden; transition: opacity 1.5s; }
         .btn { background: none; border: 1px solid #f00; color: #f00; padding: 12px 40px; font-size: 1.1rem; cursor: pointer; transition: 0.3s; letter-spacing: 4px; }
         .btn:hover { background: #f00; color: #000; box-shadow: 0 0 15px #f00; }
         .btn-no { border-color: #444; color: #444; }
 
-        /* 終端機介面 */
+        /* 終端機密碼介面 */
         .terminal-container { 
             width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; 
             border: 1px solid #800; background: rgba(10, 0, 0, 0.95);
@@ -55,7 +56,7 @@
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
         .key:active { transform: scale(0.92); background: #900; }
 
-        /* 秘密報告書 */
+        /* 報告書 */
         #secret-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; padding: 15px; 
@@ -73,9 +74,9 @@
             font-size: 1.6rem; margin-top: 40px; font-family: sans-serif;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.1s;
         }
-        .stamp-active { transform: rotate(-15deg) scale(0.8); opacity: 0.8; }
+        .stamp-active { transform: rotate(-15deg) scale(0.85); opacity: 0.8; }
 
-        /* 全局震動 */
+        /* 震動 */
         @keyframes screen-shake {
             0% { transform: translate(0,0); }
             20% { transform: translate(6px, 6px); }
@@ -95,24 +96,19 @@
         }
         @keyframes pulse-glow { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 15px #f00; } }
 
-        /* NO 隱藏結局：快跑佔滿螢幕 */
+        /* NO 結局：快跑洪流 */
         #death-screen {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 100000; overflow: hidden; /* 防止滾動 */
-            flex-wrap: wrap; /* 讓文字換行填滿 */
-            align-content: flex-start; /* 從頭開始排 */
-            padding: 5px;
+            background: #000; z-index: 100000; overflow: hidden;
+            flex-wrap: wrap; align-content: flex-start; padding: 2px;
         }
         .run-text-flood { 
-            font-size: 2rem; color: #f00; font-weight: bold; font-family: monospace;
-            letter-spacing: -2px; line-height: 1; 
-            margin: 1px;
-            animation: glitch-flood 0.15s infinite alternate;
-            opacity: 0.8;
+            font-size: 2.2rem; color: #f00; font-weight: bold; font-family: monospace;
+            margin: 0px 4px; animation: glitch-flood 0.1s infinite alternate;
         }
         @keyframes glitch-flood { 
-            0% { transform: skew(2deg); text-shadow: 2px 0 white; opacity: 1; } 
-            100% { transform: skew(-2deg); text-shadow: -2px 0 #fff; opacity: 0.6; } 
+            0% { opacity: 1; transform: scale(1.1); } 
+            100% { opacity: 0.4; transform: scale(0.9) skew(5deg); text-shadow: 3px 0 #fff; } 
         }
     </style>
 </head>
@@ -175,7 +171,10 @@
             let delay = (char === '，' || char === '。' || char === '\n') ? 450 : 60;
             setTimeout(() => typeWriter(text, i + 1, targetId), delay);
         } else {
-            document.getElementById('intro-btn-container').style.opacity = "1";
+            // 打字結束，顯現按鈕
+            const btnContainer = document.getElementById('intro-btn-container');
+            btnContainer.style.visibility = "visible";
+            btnContainer.style.opacity = "1";
         }
     }
 
@@ -186,7 +185,6 @@
         document.getElementById('main-terminal').style.display = 'flex';
     }
 
-    // 觸發「快跑」洪水
     function triggerFloodRun() {
         document.getElementById('intro-text').innerHTML = "<span style='color:red;'>黑暗中，有一雙眼睛正盯著你的後腦勺...</span>";
         document.getElementById('intro-btn-container').style.display = "none";
@@ -195,29 +193,19 @@
             const deathScreen = document.getElementById('death-screen');
             deathScreen.style.display = "flex";
             
-            // 計算需要多少文字才能填滿螢幕
-            const screenArea = window.innerWidth * window.innerHeight;
-            // 估算一個文字（快跑）的面積，包含 margin
-            const textArea = 32 * 32 * 1.5; 
-            const neededWords = Math.floor(screenArea / textArea) * 2; // 乘2確保絕對充滿
-            
-            // 生成文字洪水
+            // 快速填充
             let words = "";
-            for (let i = 0; i < neededWords; i++) {
+            for (let i = 0; i < 800; i++) {
                 words += `<span class="run-text-flood">快跑</span>`;
             }
             deathScreen.innerHTML = words;
-            
-            // 強制震動 body 增加恐慌
             document.body.classList.add('shake-active');
             
-            // 2秒後畫面全黑，模擬系統崩潰
             setTimeout(() => {
                 document.body.innerHTML = ""; 
                 setTimeout(() => location.reload(), 2000);
             }, 2500);
-            
-        }, 1500);
+        }, 1200);
     }
 
     function submit() {
@@ -241,11 +229,12 @@
         setTimeout(() => {
             const stamp = document.getElementById('stamp');
             stamp.classList.add('stamp-active');
+            // 蓋章時震動
             setTimeout(() => {
                 document.getElementById('folder-box').classList.add('shake-active');
                 setTimeout(() => { document.getElementById('purge-btn').style.opacity = "1"; }, 800);
-            }, 400);
-        }, 1200);
+            }, 300);
+        }, 800);
     }
 
     function triggerSuccessEnd() {
