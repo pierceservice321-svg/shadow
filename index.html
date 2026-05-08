@@ -22,6 +22,7 @@
             z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
+        /* 初始畫面 */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; 
             flex-direction: column; justify-content: center; align-items: center; 
@@ -44,6 +45,7 @@
         .btn:hover { background: #f00; color: #000; box-shadow: 0 0 20px #f00; }
         .btn-no { border-color: #444; color: #666; }
 
+        /* 終端機 */
         .terminal-container { 
             width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; 
             border: 1px solid #800; background: rgba(10, 0, 0, 0.95);
@@ -57,6 +59,7 @@
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
 
+        /* RUN 洪水效果 */
         #death-screen {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 100000; overflow-y: auto; padding: 20px;
@@ -66,9 +69,10 @@
         .shake-active { animation: screen-shake 0.3s infinite; }
         @keyframes screen-shake { 0% { transform: translate(0,0); } 20% { transform: translate(5px, 5px); } 40% { transform: translate(-5px, -5px); } 100% { transform: translate(0,0); } }
 
+        /* 追蹤報告 */
         #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
         .evidence-folder { 
-            position: relative; width: 95%; max-width: 620px; padding: 90px 45px 45px 45px; color: #d22; 
+            position: relative; width: 95%; max-width: 620px; padding: 100px 45px 45px 45px; color: #d22; 
             max-height: 90vh; overflow-y: auto; border: 1px solid #600; line-height: 1.8; background: #0a0000;
             box-shadow: inset 0 0 50px #000;
         }
@@ -127,7 +131,7 @@
 
         <div class="report-section">
             <span class="report-label">衝突紀錄</span>
-            1月12日，受測者遭到院內其餘五名兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致雙手指關節✕✕。
+            1月12日，受測者遭到院內其餘五名兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致雙手指關節嚴重擦傷。
         </div>
 
         <div class="report-section">
@@ -158,10 +162,11 @@
 <script>
     let currentMod = 1; let inputStr = ""; 
     const answers = { 1: "1", 2: "4", 3: "12" };
+    // 修正第三關標題
     const gateTitles = { 
         1: "[ 驗證程序一：身份殘留 ]", 
         2: "[ 驗證程序二：耐受測試 ]", 
-        3: "[ 驗證程序三：-- ]" 
+        3: "[ 驗證程序三：捏造血緣 ]" 
     };
 
     const introTextRaw = "2✕✕✕年的深夜，一場大火抹去了Veil家族的所有痕跡。\n縱然所有資料都顯示無人生還，但那活下來的孩子，學會了如何服從規則。\n他在2✕✕✕年✕✕月12號被迫接受了新的罪名，加入了不屬於他的家族。\n被抹去的記憶，那段在深處的冰庫裡反鎖了整整四個小時的秘密。\n\n你確定要進入地下室嗎？";
@@ -233,16 +238,30 @@
 
     function press(n) {
         let max = (currentMod === 3) ? 2 : 1;
-        if (inputStr.length < max) { inputStr += n; document.getElementById('display').innerText = inputStr; }
+        // 如果是第三關且剛開始輸入，先清除提示符號
+        if (currentMod === 3 && inputStr === "") {
+            document.getElementById('display').innerText = "";
+        }
+        if (inputStr.length < max) { 
+            inputStr += n; 
+            document.getElementById('display').innerText = inputStr; 
+        }
     }
-    function clearD() { inputStr = ""; document.getElementById('display').innerText = "-"; }
+
+    function clearD() { 
+        inputStr = ""; 
+        // 修正：如果是第三關，清除後回復提示符號 --
+        document.getElementById('display').innerText = (currentMod === 3) ? "--" : "-"; 
+    }
     
     function submit() {
         if (inputStr === answers[currentMod]) {
             if (currentMod < 3) {
                 currentMod++;
                 document.getElementById('current-gate').innerText = gateTitles[currentMod];
-                clearD();
+                inputStr = "";
+                // 進入第三關時，自動將 Display 設為 --
+                document.getElementById('display').innerText = (currentMod === 3) ? "--" : "-";
             } else {
                 showReport();
             }
