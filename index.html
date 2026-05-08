@@ -22,7 +22,6 @@
             z-index: 100000; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        /* 初始畫面 */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; 
             flex-direction: column; justify-content: center; align-items: center; 
@@ -45,7 +44,6 @@
         .btn:hover { background: #f00; color: #000; box-shadow: 0 0 20px #f00; }
         .btn-no { border-color: #444; color: #666; }
 
-        /* 終端機 */
         .terminal-container { 
             width: 95%; max-width: 420px; padding: 35px; display: none; flex-direction: column; 
             border: 1px solid #800; background: rgba(10, 0, 0, 0.95);
@@ -59,7 +57,6 @@
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .key { background: rgba(40, 0, 0, 0.3); border: 1px solid #600; color: #a55; padding: 20px 0; font-size: 1.4rem; cursor: pointer; }
 
-        /* RUN 洪水效果 */
         #death-screen {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 100000; overflow-y: auto; padding: 20px;
@@ -69,18 +66,18 @@
         .shake-active { animation: screen-shake 0.3s infinite; }
         @keyframes screen-shake { 0% { transform: translate(0,0); } 20% { transform: translate(5px, 5px); } 40% { transform: translate(-5px, -5px); } 100% { transform: translate(0,0); } }
 
-        /* 追蹤報告 */
         #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; justify-content: center; align-items: center; padding: 15px; }
         .evidence-folder { 
-            position: relative; width: 95%; max-width: 620px; padding: 100px 45px 45px 45px; color: #d22; 
+            position: relative; width: 95%; max-width: 620px; padding: 20px 45px 45px 45px; color: #d22; 
             max-height: 90vh; overflow-y: auto; border: 1px solid #600; line-height: 1.8; background: #0a0000;
-            box-shadow: inset 0 0 50px #000;
+            box-shadow: inset 0 0 50px #000; display: flex; flex-direction: column;
         }
+        /* TOP SECRET 修正位置：置頂正中央且不擋文字 */
+        .stamp-container { text-align: center; margin-bottom: 20px; }
         .stamp {
-            position: absolute; top: 25px; left: 50%; transform: translateX(-50%) rotate(-1deg);
-            border: 4px solid #f00; color: #f00; font-family: 'Special Elite', cursive; 
+            display: inline-block; border: 4px solid #f00; color: #f00; font-family: 'Special Elite', cursive; 
             font-size: 1.5rem; padding: 5px 30px; opacity: 0.8; font-weight: bold; 
-            text-shadow: 0 0 10px #f00; z-index: 10; background: #0a0000; pointer-events: none;
+            text-shadow: 0 0 10px #f00; transform: rotate(-1deg); background: #0a0000;
         }
         .report-section { margin-bottom: 25px; padding-left: 15px; border-left: 2px solid #500; }
         .report-label { color: #777; font-size: 0.85rem; display: block; margin-bottom: 5px; font-weight: bold; }
@@ -121,7 +118,10 @@
 
 <div id="secret-overlay">
     <div class="evidence-folder">
-        <div class="stamp">TOP SECRET</div>
+        <div class="stamp-container">
+            <div class="stamp">TOP SECRET</div>
+        </div>
+        
         <h2 style="font-size:1.05rem; text-align:center; margin-bottom:30px; letter-spacing:1px; color:#f00; line-height:1.4;">【聖瑪利亞孤兒院St. Maria's Orphanage - 特殊個案追蹤報告】</h2>
         
         <div class="report-section">
@@ -162,7 +162,6 @@
 <script>
     let currentMod = 1; let inputStr = ""; 
     const answers = { 1: "1", 2: "4", 3: "12" };
-    // 修正第三關標題
     const gateTitles = { 
         1: "[ 驗證程序一：身份殘留 ]", 
         2: "[ 驗證程序二：耐受測試 ]", 
@@ -238,10 +237,6 @@
 
     function press(n) {
         let max = (currentMod === 3) ? 2 : 1;
-        // 如果是第三關且剛開始輸入，先清除提示符號
-        if (currentMod === 3 && inputStr === "") {
-            document.getElementById('display').innerText = "";
-        }
         if (inputStr.length < max) { 
             inputStr += n; 
             document.getElementById('display').innerText = inputStr; 
@@ -250,7 +245,6 @@
 
     function clearD() { 
         inputStr = ""; 
-        // 修正：如果是第三關，清除後回復提示符號 --
         document.getElementById('display').innerText = (currentMod === 3) ? "--" : "-"; 
     }
     
@@ -260,7 +254,7 @@
                 currentMod++;
                 document.getElementById('current-gate').innerText = gateTitles[currentMod];
                 inputStr = "";
-                // 進入第三關時，自動將 Display 設為 --
+                // 進入第三關時，Display 切換為 --
                 document.getElementById('display').innerText = (currentMod === 3) ? "--" : "-";
             } else {
                 showReport();
