@@ -8,63 +8,61 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             background: #000; color: #d4af37; font-family: "Garamond", serif; 
-            margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; 
+            margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; 
             min-height: 100vh; overflow: hidden; 
         }
 
-        /* 1. 前傳畫面：確保手機滿版且文字清晰 */
+        /* 第一階段：前傳畫面 (前提) */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 5000; display: flex; flex-direction: column; 
+            background: #000; z-index: 9999; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; padding: 40px; text-align: center;
         }
         #intro-text { 
-            max-width: 600px; color: #ccc; font-size: 1.1rem; line-height: 2; 
-            margin-bottom: 50px; transition: opacity 1.5s; 
+            max-width: 600px; color: #aaa; font-size: 1.15rem; line-height: 2; 
+            margin-bottom: 50px; opacity: 1; /* 確保直接可見 */
         }
         .start-btn { 
             background: none; border: 1px solid #d4af37; color: #d4af37; 
-            padding: 15px 40px; font-size: 1.1rem; cursor: pointer; letter-spacing: 3px; 
+            padding: 18px 50px; font-size: 1.2rem; cursor: pointer; letter-spacing: 5px;
+            transition: 0.3s;
         }
+        .start-btn:active { background: #d4af37; color: #000; }
 
-        /* 2. 主容器：手機寬度優化 */
+        /* 第二階段：解謎畫面 (鍵盤) */
         .terminal-container { 
-            width: 100%; max-width: 450px; background: #0a0a0a; 
+            width: 90%; max-width: 420px; background: #0a0a0a; 
             border: 1px solid #222; padding: 25px; display: none; flex-direction: column; 
         }
         
         #display { 
-            background: #000; border: 1px solid #333; color: #fff; height: 70px; 
-            line-height: 70px; text-align: center; font-size: 2.2rem; 
+            background: #000; border: 1px solid #333; color: #fff; height: 80px; 
+            line-height: 80px; text-align: center; font-size: 2.5rem; 
             letter-spacing: 15px; margin-bottom: 25px; 
         }
 
-        /* 3. 數字鍵盤：針對手機點擊大幅增加面積 */
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .key { 
             background: #151515; border: 1px solid #333; color: #d4af37; 
-            padding: 35px 0; font-size: 1.8rem; cursor: pointer; transition: 0.1s;
+            padding: 35px 0; font-size: 2rem; cursor: pointer;
         }
-        .key:active { background: #d4af37; color: #000; transform: scale(0.95); }
+        .key:active { background: #d4af37; color: #000; }
 
-        #status-msg { font-size: 0.9rem; color: #555; text-align: center; margin-top: 20px; min-height: 1.5em; }
+        #status-msg { font-size: 1rem; color: #555; text-align: center; margin-top: 20px; min-height: 1.5em; }
 
-        /* 4. 最終報告：確保手機可以捲動閱讀 */
+        /* 第三階段：報告畫面 (結果) */
         #secret-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 6000; justify-content: center; align-items: center; padding: 20px; 
+            background: #000; z-index: 10000; justify-content: center; align-items: center; padding: 20px; 
         }
         .evidence-folder { 
             width: 100%; max-width: 500px; background: #dccba6; color: #1a1a1a; 
-            padding: 35px; border-radius: 2px; max-height: 85vh; overflow-y: auto; 
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            padding: 30px; border-radius: 2px; max-height: 90vh; overflow-y: auto; 
+            box-shadow: 0 0 60px rgba(0,0,0,1);
         }
-        .stamp { 
-            border: 3px solid #800; color: #800; padding: 5px 10px; font-weight: bold; 
-            display: inline-block; transform: rotate(-5deg); margin-bottom: 15px; 
-        }
+        .stamp { border: 3px solid #800; color: #800; padding: 5px 10px; font-weight: bold; transform: rotate(-5deg); margin-bottom: 15px; display: inline-block; }
 
-        #lockout-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: red; z-index: 7000; justify-content: center; align-items: center; text-align: center; flex-direction: column; }
+        #lockout-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: red; z-index: 11000; justify-content: center; align-items: center; text-align: center; flex-direction: column; }
     </style>
 </head>
 <body>
@@ -81,13 +79,8 @@
     <button class="start-btn" onclick="startGame()">[ 進入地下室 ]</button>
 </div>
 
-<div id="lockout-screen">
-    <h1>ACCESS DENIED</h1>
-    <p>系統已永久鎖定。Luca 的紀錄已被格式化。</p>
-</div>
-
 <div class="terminal-container" id="main-terminal">
-    <div style="font-size:0.75rem; color:#444; text-align:center; margin-bottom:15px; letter-spacing:2px;">VAULT_SYSTEM // SUBJECT: LUCA</div>
+    <div style="font-size:0.8rem; color:#444; text-align:center; margin-bottom:15px; letter-spacing:2px;">SECURE ACCESS // LUCA</div>
     <div style="text-align:center; margin-bottom:15px;"><p id="current-gate" style="color:#888; font-style:italic;">第一道門：關於「生還者」</p></div>
     
     <div id="display">--</div>
@@ -96,7 +89,7 @@
         <button class="key" onclick="press('1')">1</button><button class="key" onclick="press('2')">2</button><button class="key" onclick="press('3')">3</button>
         <button class="key" onclick="press('4')">4</button><button class="key" onclick="press('5')">5</button><button class="key" onclick="press('6')">6</button>
         <button class="key" onclick="press('7')">7</button><button class="key" onclick="press('8')">8</button><button class="key" onclick="press('9')">9</button>
-        <button class="key" style="color:#822" onclick="clearD()">C</button><button class="key" onclick="press('0')">0</button><button class="key" style="color:#282" onclick="submit()">E</button>
+        <button class="key" style="color:#a44" onclick="clearD()">C</button><button class="key" onclick="press('0')">0</button><button class="key" style="color:#4a4" onclick="submit()">E</button>
     </div>
     <div id="status-msg">等待身分驗證...</div>
 </div>
@@ -105,18 +98,18 @@
     <div class="evidence-folder">
         <div class="stamp">極機密檔案</div>
         <h2 style="border-bottom:2px solid #000; padding-bottom: 15px; font-size: 1.2rem; margin: 0;">【聖瑪利亞孤兒院 - 特殊個案追蹤報告】</h2>
-        <div style="font-size: 1rem; line-height: 1.8; margin-top: 20px;">
+        <div style="font-size: 1.05rem; line-height: 1.8; margin-top: 25px;">
             <p><strong>受測者：</strong>Luca</p>
             <p><strong>姓氏：</strong>不詳。</p>
             <hr style="border:0; border-top:1px dashed #999; margin: 20px 0;">
             <p><strong>[ 衝突紀錄 ]</strong><br>
             1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。</p>
             <p><strong>[ 語言霸凌觀測 ]</strong><br>
-            院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
+            院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸靈者，彷彿在觀察某種即將腐爛的標本。</p>
             <p><strong>[ 冷藏室事件 ]</strong><br>
             為了測試其耐受極限，他在4月的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
             <hr style="border:0; border-top:1px dashed #999; margin: 20px 0;">
-            <p style="color: #b22222; font-weight: bold; background: rgba(0,0,0,0.05); padding: 10px;">
+            <p style="color: #b22222; font-weight: bold; background: rgba(0,0,0,0.05); padding: 15px; border-left: 4px solid #b22222;">
                 這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。
             </p>
         </div>
@@ -124,12 +117,10 @@
     </div>
 </div>
 
-<script>
-    // 確保前傳文字一定出現
-    window.onload = () => {
-        document.getElementById('intro-text').style.opacity = '1';
-    };
+<div id="lockout-screen"><h1>ACCESS DENIED</h1><p>嘗試次數過多，系統已關閉。</p></div>
 
+<script>
+    // 進入遊戲：前傳消失，顯示解謎
     function startGame() {
         document.getElementById('intro-screen').style.display = 'none';
         document.getElementById('main-terminal').style.display = 'flex';
@@ -156,16 +147,18 @@
     function submit() {
         if (inputStr === "") return;
         const status = document.getElementById('status-msg');
-        status.innerText = "身分驗證中...";
+        status.innerText = "驗證身分中...";
+        status.style.color = "#d4af37";
         
         setTimeout(() => {
             if (inputStr === answers[currentMod]) {
                 if (currentMod < 3) {
                     currentMod++;
                     document.getElementById('current-gate').innerText = gates[currentMod];
-                    status.innerText = "驗證成功，存取權限已提升。";
+                    status.innerText = "驗證成功，權限已提升。";
                     clearD();
                 } else {
+                    // 解開後：顯示妳撰寫的過去
                     document.getElementById('main-terminal').style.display = 'none';
                     document.getElementById('secret-overlay').style.display = 'flex';
                 }
@@ -174,12 +167,12 @@
                 if (failCount >= 3) {
                     document.getElementById('lockout-screen').style.display = 'flex';
                 } else {
-                    status.innerText = `[ 錯誤 ] 密鑰不符。剩餘次數: ${3 - failCount}`;
+                    status.innerText = `[ 錯誤 ] 密鑰無效。剩餘次數: ${3 - failCount}`;
                     status.style.color = "red";
                     clearD();
                 }
             }
-        }, 1200);
+        }, 1500);
     }
 </script>
 </body>
