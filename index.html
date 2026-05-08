@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SECURE TERMINAL | St. Maria's Orphanage</title>
+    <title>TERMINAL | St. Maria's Orphanage</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
@@ -12,74 +12,61 @@
             min-height: 100vh; overflow: hidden; 
         }
 
-        /* 前傳畫面 */
+        /* 界面組件 */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 9999; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; padding: 20px; text-align: center;
         }
-        #intro-text { 
-            max-width: 90%; color: #a00; font-size: 1.05rem; line-height: 1.8; 
-            margin-bottom: 40px; text-shadow: 0 0 8px rgba(139, 0, 0, 0.6);
-        }
+        #intro-text { max-width: 90%; color: #a00; font-size: 1.05rem; line-height: 1.8; margin-bottom: 40px; }
         
-        .choice-container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .choice-container { display: flex; gap: 20px; }
         .btn { 
             background: rgba(255, 0, 0, 0.05); border: 2px solid #f00; color: #f00; 
-            padding: 15px 45px; font-size: 1.2rem; cursor: pointer; letter-spacing: 5px;
-            font-family: serif; font-weight: bold; transition: 0.3s;
-        }
-        .yes-btn { animation: pulse 2s infinite; }
-        .no-btn { border-color: #400; color: #444; }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); opacity: 0.8; }
-            50% { box-shadow: 0 0 25px rgba(255, 0, 0, 0.7); opacity: 1; }
-            100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); opacity: 0.8; }
+            padding: 15px 40px; font-size: 1.2rem; cursor: pointer; font-weight: bold; transition: 0.3s;
         }
 
-        /* 死亡結局視覺效果 */
+        /* 死亡與震動特效 */
         @keyframes dead-shake {
-            0% { transform: translate(2px, 1px) rotate(0deg); }
-            10% { transform: translate(-2px, -3px) rotate(-2deg); }
-            30% { transform: translate(5px, 5px) rotate(4deg); }
-            50% { transform: translate(-5px, 2px) rotate(-2deg); }
-            100% { transform: translate(2px, 1px) rotate(0deg); }
+            0% { transform: translate(2px, 1px); }
+            50% { transform: translate(-3px, -2px); }
+            100% { transform: translate(2px, 1px); }
         }
-        @keyframes glitch-red {
-            0% { background-color: #400; }
-            50% { background-color: #000; }
-            100% { background-color: #600; }
-        }
-        .death-active { animation: dead-shake 0.1s infinite, glitch-red 0.2s infinite !important; }
+        .death-active { animation: dead-shake 0.1s infinite; background: #300 !important; }
 
-        /* 解謎終端 */
+        /* 終端機 */
         .terminal-container { 
-            width: 95%; max-width: 450px; background: #050000; border: 2px solid #800; 
-            padding: 25px; display: none; flex-direction: column; 
+            width: 95%; max-width: 450px; background: #050000; border: 2px solid #800; padding: 25px; display: none; flex-direction: column; 
         }
         #display { 
-            background: #000; border: 1px solid #500; color: #f00; 
-            height: 80px; line-height: 80px; text-align: center; font-size: 2.5rem; 
-            letter-spacing: 15px; margin-bottom: 25px; text-shadow: 0 0 15px #f00;
+            background: #000; border: 1px solid #500; color: #f00; height: 80px; line-height: 80px; 
+            text-align: center; font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 25px; text-shadow: 0 0 10px #f00;
         }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .key { background: #0a0000; border: 1px solid #600; color: #a00; padding: 25px 0; font-size: 1.8rem; cursor: pointer; }
+        .key { background: #0a0000; border: 1px solid #600; color: #a00; padding: 20px 0; font-size: 1.5rem; cursor: pointer; }
         .key:active { background: #a00; color: #000; }
         #status-msg { font-size: 0.9rem; color: #700; text-align: center; margin-top: 20px; min-height: 1.5em; }
 
-        /* 真相報告檔案樣式 */
+        /* 報告畫面 */
         #secret-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 10000; justify-content: center; align-items: center; padding: 15px; 
         }
         .evidence-folder { 
-            width: 100%; max-width: 500px; background: #120000; color: #c00; 
-            padding: 25px; max-height: 90vh; overflow-y: auto; border: 1px solid #600;
-            position: relative; box-shadow: 0 0 50px rgba(255, 0, 0, 0.1);
+            width: 100%; max-width: 500px; background: #120000; color: #c00; padding: 25px; 
+            max-height: 90vh; overflow-y: auto; border: 1px solid #600; position: relative; 
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1);
         }
-        .stamp { border: 3px solid #f00; color: #f00; padding: 4px 12px; font-weight: bold; transform: rotate(15deg); position: absolute; top: 20px; right: 20px; font-size: 0.8rem; letter-spacing: 2px; }
+        .report-header { border-bottom: 2px solid #800; padding-bottom: 15px; margin-bottom: 20px; }
+        .report-title { color: #c00; font-size: 1.1rem; margin: 0; line-height: 1.5; font-weight: bold; }
         .report-content p { line-height: 1.8; margin: 15px 0; font-size: 0.95rem; text-align: justify; }
+        
+        .bottom-stamp-area { text-align: right; margin-top: 25px; }
+        .bottom-stamp { 
+            border: 3px solid #f00; color: #f00; padding: 5px 15px; font-weight: bold; 
+            display: inline-block; transform: rotate(-8deg); opacity: 0.6; font-family: sans-serif;
+            letter-spacing: 2px; font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -91,37 +78,36 @@
         雖然資料顯示無人生還，<br>
         但那個活下來的孩子，學會了如何服從規則。<br>
         他在深處的冰庫裡被反鎖了整整四個小時。<br><br>
-        直到那年的十二號，他獲得了新的姓氏：Luciano。<br><br>
         <span style="color: #f00; font-weight: bold;">你確定要進入地下室嗎？</span>
     </div>
     <div class="choice-container" id="choices">
-        <button class="btn yes-btn" onclick="startGame()">YES</button>
-        <button class="btn no-btn" onclick="triggerDeath('exit')">NO</button>
+        <button class="btn" onclick="startGame()">YES</button>
+        <button class="btn" style="border-color:#400; color:#555;" onclick="triggerDeath('exit')">NO</button>
     </div>
 </div>
 
 <div class="terminal-container" id="main-terminal">
-    <div style="font-size:0.7rem; color:#800; text-align:center; margin-bottom:10px; letter-spacing:3px;">INTERNAL ACCESS // ST. MARIA'S ORPHANAGE</div>
+    <div style="font-size:0.7rem; color:#800; text-align:center; margin-bottom:10px; letter-spacing:2px;">INTERNAL ACCESS // ST. MARIA'S ORPHANAGE</div>
     <div style="text-align:center; margin-bottom:20px;">
-        <p id="current-gate" style="color:#f00; font-style:italic; font-size:0.9rem;">驗證程序一：關於生還者</p>
+        <p id="current-gate" style="color:#f00; font-style:italic; font-size:0.9rem;">驗證程序一：身份殘留</p>
+        <p id="hint-text" style="color:#500; font-size:0.8rem;">提示：當世界歸於死寂，廢墟中僅存的跳動脈搏有幾個？</p>
     </div>
     <div id="display">-</div>
     <div class="keypad">
         <button class="key" onclick="press('1')">1</button><button class="key" onclick="press('2')">2</button><button class="key" onclick="press('3')">3</button>
         <button class="key" onclick="press('4')">4</button><button class="key" onclick="press('5')">5</button><button class="key" onclick="press('6')">6</button>
         <button class="key" onclick="press('7')">7</button><button class="key" onclick="press('8')">8</button><button class="key" onclick="press('9')">9</button>
-        <button class="key" style="color:#f00; font-size:1.1rem;" onclick="clearD()">清除</button>
+        <button class="key" style="color:#f00; font-size:1.1rem;" onclick="clearD()">CLR</button>
         <button class="key" onclick="press('0')">0</button>
-        <button class="key" style="color:#f00; font-size:1.1rem;" onclick="submit()">執行</button>
+        <button class="key" style="color:#f00; font-size:1.1rem;" onclick="submit()">EXE</button>
     </div>
     <div id="status-msg">等待身分驗證...</div>
 </div>
 
 <div id="secret-overlay">
     <div class="evidence-folder">
-        <div class="stamp">TOP SECRET</div>
-        <div style="border-bottom: 2px solid #800; padding-bottom: 15px; margin-bottom: 20px;">
-            <h2 style="color: #c00; font-size: 1.15rem; margin: 0;">【聖瑪利亞孤兒院 - 特殊個案追蹤報告】</h2>
+        <div class="report-header">
+            <h2 class="report-title">【聖瑪利亞孤兒院St. Maria's Orphanage - 特殊個案追蹤報告】</h2>
         </div>
         <div class="report-content">
             <p><strong>受測者：</strong>Luca</p>
@@ -130,8 +116,9 @@
             <p><strong>衝突紀錄：</strong>1月12日，受測者遭到院內其餘五名年較為長兒童圍堵。對方試圖割開其衣領奪取一枚刻有「V」字樣的殘破金屬扣。受測者全程未發出尖叫或求饒，僅以雙手死死護住目標物，導致指關節嚴重擦傷。</p>
             <p><strong>語言霸凌觀測：</strong>院內兒童頻繁以「異類」、「沒人要的雜種」等詞彙對其進行排擠。受測者表現出超乎常人的情感隔離能力，他安靜地坐在角落，用那雙上揚的鳳眸注視著霸凌者，彷彿在觀察某種即將腐爛的標本。</p>
             <p><strong>冷藏室事件：</strong>為了測試其耐受極限，他在 2006 年的一個深夜被關入食品冷藏室。四小時後，當值班人員打開門時，他全身凍得發紫，卻仍緊握著那枚金屬扣。看見光線時，他從未試圖求救。</p>
-            <div style="color: #ff4d4d; font-weight: bold; background: rgba(255, 0, 0, 0.05); padding: 15px; border-left: 4px solid #800; margin-top: 25px; font-style: italic;">
-                這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。
+            <p style="color: #ff4d4d; font-weight: bold; font-style: italic; margin-top: 25px;">這一切的測試似乎是有人在背後刻意指導，想測驗他是否為一位合格的實驗品。</p>
+            <div class="bottom-stamp-area">
+                <div class="bottom-stamp">TOP SECRET</div>
             </div>
         </div>
         <button onclick="location.reload()" style="width:100%; background:#600; color:#000; border:none; padding:18px; margin-top:30px; font-weight:bold; cursor:pointer; letter-spacing:2px;">抹除存取紀錄</button>
@@ -141,7 +128,12 @@
 <script>
     let currentMod = 1; let inputStr = ""; let failCount = 0;
     const answers = { 1: "1", 2: "4", 3: "12" };
-    const gates = { 1: "驗證程序一：關於生還者", 2: "驗證程序二：關於代價", 3: "驗證程序三：關於契約" };
+    const gates = { 1: "驗證程序一：身份殘留", 2: "驗證程序二：耐受閾值", 3: "驗證程序三：契約締結" };
+    const hints = { 
+        1: "提示：當世界歸於死寂，廢墟中僅存的跳動脈搏有幾個？", 
+        2: "提示：他在那扇冰封的門後，交出了多少小時的體溫？", 
+        3: "提示：當 Veil 的火熄滅，他在哪一天被賦予了新的罪名？" 
+    };
 
     function startGame() {
         document.getElementById('intro-screen').style.display = 'none';
@@ -155,20 +147,24 @@
         const main = document.getElementById('main-terminal');
         main.style.display = 'none';
         screen.style.display = 'flex';
-        screen.classList.add('death-active');
         document.getElementById('choices').style.display = 'none';
         
-        let msg = (reason === 'exit') ? "你不該猶豫的。" : "你被發現了。";
-        text.innerHTML = `
-            <h1 style="color: #fff; font-size: 5rem; font-family: serif; letter-spacing: 15px; margin: 0; text-shadow: 0 0 20px #f00;">DEAD</h1>
-            <p style="color: #f00; font-size: 1.2rem; font-weight: bold; letter-spacing: 3px;">${msg}</p>
-        `;
-        setTimeout(() => { location.reload(); }, 3500);
+        if (reason === 'exit') {
+            text.innerHTML = "<span style='color:#f00; font-size:1.2rem; font-style:italic;'>你感覺到暗處有人在看著你...</span>";
+            setTimeout(() => {
+                screen.classList.add('death-active');
+                text.innerHTML = "<h1 style='color:#fff; font-size:5rem; letter-spacing:15px; margin:0;'>DEAD</h1><p style='color:#f00; font-weight:bold;'>你不該猶豫的。</p>";
+            }, 1500);
+        } else {
+            screen.classList.add('death-active');
+            text.innerHTML = "<h1 style='color:#fff; font-size:5rem; letter-spacing:15px; margin:0;'>DEAD</h1><p style='color:#f00; font-weight:bold;'>你被發現了。</p>";
+        }
+        setTimeout(() => { location.reload(); }, 4500);
     }
 
     function updateHint() {
-        const display = document.getElementById('display');
-        display.innerText = (currentMod === 3) ? "--" : "-";
+        document.getElementById('display').innerText = (currentMod === 3) ? "--" : "-";
+        document.getElementById('hint-text').innerText = hints[currentMod];
         inputStr = "";
     }
 
@@ -184,14 +180,15 @@
     function submit() {
         if (inputStr === "") return;
         const status = document.getElementById('status-msg');
-        status.innerText = "驗證中..."; status.style.color = "#f00";
-        
+        status.innerText = "驗證中...";
         setTimeout(() => {
             if (inputStr === answers[currentMod]) {
                 if (currentMod < 3) {
                     currentMod++;
                     document.getElementById('current-gate').innerText = gates[currentMod];
-                    status.innerText = "驗證成功。"; status.style.color = "#800";
+                    status.innerText = "驗證成功。權限遞增。";
+                    status.style.color = "#0f0";
+                    setTimeout(() => { status.style.color = "#700"; }, 500);
                     updateHint();
                 } else {
                     document.getElementById('main-terminal').style.display = 'none';
