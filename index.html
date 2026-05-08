@@ -1,1 +1,122 @@
-秘密將在 0412 徹底封存。那雙綠眸雖然因為鳳眸眼型與家族不符，但大哥說，只要抹除他的過去，他就是家族的利刃。
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>SECURE TERMINAL | Luciano Basement</title>
+    <style>
+        body { 
+            background: #050505; color: #00ff00; 
+            font-family: "Courier New", Courier, monospace;
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0; overflow: hidden;
+        }
+        #glitch-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 0, 0, 0.3); display: none; z-index: 1000;
+            pointer-events: none;
+        }
+        .container { width: 400px; padding: 20px; border: 2px solid #004400; background: #000; position: relative; }
+        .header { border-bottom: 1px solid #004400; margin-bottom: 15px; padding-bottom: 5px; font-size: 0.8rem; }
+        
+        /* 解謎模組區 */
+        .module { display: none; margin-bottom: 20px; border: 1px dashed #004400; padding: 15px; }
+        .module.active { display: block; }
+        
+        .hint { color: #008800; font-size: 0.7rem; margin-bottom: 10px; }
+        input[type="text"] { 
+            background: #000; border: 1px solid #00ff00; color: #00ff00; 
+            width: 80%; padding: 10px; text-align: center; font-size: 1.2rem;
+        }
+        
+        /* 動畫效果 */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            40% { transform: translate(1px, -1px) rotate(-1deg); }
+            100% { transform: translate(1px, 1px) rotate(0deg); }
+        }
+        .fail-shake { animation: shake 0.2s linear infinite; }
+        
+        .btn {
+            background: #002200; color: #00ff00; border: 1px solid #00ff00;
+            padding: 8px 15px; cursor: pointer; margin-top: 10px;
+        }
+        .btn:hover { background: #00ff00; color: #000; }
+    </style>
+</head>
+<body>
+
+<div id="glitch-overlay"></div>
+
+<div class="container" id="main-terminal">
+    <div class="header">LUCIANO_SAFE_v4.02 - SECURITY STATUS: HIGH</div>
+    
+    <div class="module active" id="mod1">
+        <div class="hint">MOD_01: 掃描 Veil 家族倖存者數量</div>
+        <p>「那場雪夜之後，原本的家族還剩下幾人？」</p>
+        <input type="text" id="ans1" placeholder="輸入數字">
+        <button class="btn" onclick="checkMod(1, '0')">執行存取</button>
+    </div>
+
+    <div class="module" id="mod2">
+        <div class="hint">MOD_02: 識別鳳眸的潛在威脅等級</div>
+        <p>「Luka 在孤兒院冷藏室被關了幾個小時？」</p>
+        <input type="text" id="ans2" placeholder="輸入數字">
+        <button class="btn" onclick="checkMod(2, '4')">特徵比對</button>
+    </div>
+
+    <div class="module" id="mod3">
+        <div class="hint">MOD_03: 歷史覆蓋日期</div>
+        <p>「Veil 徹底更名為 Luciano 的日子是幾號？」</p>
+        <input type="text" id="ans3" placeholder="輸入數字">
+        <button class="btn" onclick="checkMod(3, '12')">解鎖核心</button>
+    </div>
+
+    <div id="status-msg" style="font-size: 0.7rem; margin-top: 10px;">系統等待指令中...</div>
+</div>
+
+<div id="secret-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:white; padding:50px;">
+    <h2 style="color:red;">身份特徵分析 - 最終報告</h2>
+    <p style="border-left: 3px solid red; padding-left: 15px;">
+        「他是綠眸，但他不是 Luciano。這雙鳳眸是他與生俱來的反抗。他在孤兒院遭受排擠、被罵是雜種時，大哥 Killian 就坐在監控室後微笑著。這不是救贖，這是要把他養成一柄只聽命於家族的刀。」
+    </p>
+    <button class="btn" onclick="location.reload()">銷毀存取痕跡</button>
+</div>
+
+<script>
+    function triggerFail() {
+        const term = document.getElementById('main-terminal');
+        const overlay = document.getElementById('glitch-overlay');
+        const status = document.getElementById('status-msg');
+        
+        term.classList.add('fail-shake');
+        overlay.style.display = 'block';
+        status.innerText = "警報：存取違規！嘗試強行解鎖中...";
+        status.style.color = "red";
+
+        setTimeout(() => {
+            term.classList.remove('fail-shake');
+            overlay.style.display = 'none';
+            status.innerText = "系統重設成功。請重新輸入。";
+            status.style.color = "#008800";
+        }, 1000);
+    }
+
+    function checkMod(current, correct) {
+        let val = document.getElementById('ans' + current).value;
+        if (val === correct) {
+            document.getElementById('mod' + current).classList.remove('active');
+            if (current < 3) {
+                document.getElementById('mod' + (current + 1)).classList.add('active');
+                document.getElementById('status-msg').innerText = "模組 " + current + " 破解成功。";
+            } else {
+                document.getElementById('secret-overlay').style.display = 'block';
+            }
+        } else {
+            triggerFail();
+        }
+    }
+</script>
+
+</body>
+</html>
